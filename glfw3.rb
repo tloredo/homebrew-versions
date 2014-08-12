@@ -8,9 +8,9 @@ class Glfw3 < Formula
   depends_on 'cmake' => :build
 
   option :universal
-  option :static, 'Build static library only (defaults to building dylib only)'
-  option :'build-examples', 'Build examples'
-  option :'build-tests', 'Build test programs'
+  option "static", "Build static library only (defaults to building dylib only)"
+  option "build-examples", "Build examples"
+  option "build-tests", "Build test programs"
 
   # make library name consistent
   patch :DATA
