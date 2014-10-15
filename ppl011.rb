@@ -23,15 +23,13 @@ class Ppl011 < Formula
   end
 
   def install
-    gmp4 = Formula["gmp4"]
-
-    args = [
-      "--prefix=#{prefix}",
-      "--disable-dependency-tracking",
-      "--with-gmp-prefix=#{gmp4.opt_prefix}"
-    ]
-
-    system "./configure", *args
+    system "./configure", "--prefix=#{prefix}",
+                          "--disable-dependency-tracking",
+                          "--disable-silent-rules",
+                          "--disable-ppl_lpsol",
+                          "--disable-ppl_lcdd",
+                          "--disable-ppl_pips",
+                          "--with-gmp-prefix=#{Formula["gmp4"].opt_prefix}"
     system "make install"
   end
 end

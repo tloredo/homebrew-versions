@@ -4,7 +4,7 @@ class BashCompletion2 < Formula
   homepage 'http://bash-completion.alioth.debian.org/'
   url 'http://ftp.de.debian.org/debian/pool/main/b/bash-completion/bash-completion_2.1.orig.tar.bz2'
   sha256 '2b606804a7d5f823380a882e0f7b6c8a37b0e768e72c3d4107c51fbe8a46ae4f'
-  revision 1
+  revision 2
 
   conflicts_with 'bash-completion'
 
@@ -22,6 +22,13 @@ class BashCompletion2 < Formula
   patch do
     url "http://anonscm.debian.org/gitweb/?p=bash-completion/bash-completion.git;a=patch;h=50ae57927365a16c830899cc1714be73237bdcb2"
     sha1 "e14ac827a59f48eb05e7da60b6fce996be1a34f4"
+  end
+
+  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=739835
+  # resolves issue with completion of files/directories with spaces in the name.
+  patch do
+    url "http://anonscm.debian.org/cgit/bash-completion/debian.git/plain/debian/patches/00-fix_quote_readline_by_ref.patch?id=d734ca3bd73ae49b8f452802fb8fb65a440ab07a"
+    sha1 "5dc4f7428d968807fc6cce0fe70ba07ca187150b"
   end
 
   # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=739835

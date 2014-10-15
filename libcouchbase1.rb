@@ -18,7 +18,7 @@ class Libcouchbase1 < Formula
     system "make install"
   end
 
-  def test
+  test do
     system "#{bin}/cbc-version"
   end
 end

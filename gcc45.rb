@@ -50,10 +50,10 @@ class Gcc45 < Formula
     sha1 "49e335d085567467155ea6512ffa959a18eab0ef"
   end
 
-  def install
-    # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
-    cxxstdlib_check :skip
+  # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
+  cxxstdlib_check :skip
 
+  def install
     # GCC will suffer build errors if forced to use a particular linker.
     ENV.delete 'LD'
 

@@ -5,6 +5,7 @@ class Postgresql92 < Formula
   homepage 'http://www.postgresql.org/'
   url 'http://ftp.postgresql.org/pub/source/v9.2.8/postgresql-9.2.8.tar.bz2'
   sha256 '568ba482340219097475cce9ab744766889692ee7c9df886563e8292d66ed87c'
+  revision 1
 
   option '32-bit'
   option 'no-perl', 'Build without Perl support'
@@ -51,7 +52,10 @@ class Postgresql92 < Formula
     args << "--with-ossp-uuid" if build.with? 'ossp-uuid'
     args << "--with-python" if build.with? 'python'
     args << "--with-perl" unless build.include? 'no-perl'
-    args << "--with-tcl" unless build.include? 'no-tcl'
+    if !build.include? "no-tcl"
+      args << "--with-tcl"
+      args << "--with-tclconfig=#{MacOS.sdk_path}/usr/lib"
+    end
     args << "--enable-dtrace" if build.include? 'enable-dtrace'
 
     if build.with? 'ossp-uuid'

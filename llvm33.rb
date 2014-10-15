@@ -70,6 +70,10 @@ class Llvm33 < Formula
     end
   end
 
+  # Fix Makefile bug concerning MacOSX >= 10.10
+  # See: http://llvm.org/bugs/show_bug.cgi?id=19951
+  patch :DATA
+
   option :universal
   option 'with-libcxx', 'Build libc++ standard library support'
   option 'with-clang', 'Build Clang C/ObjC/C++ frontend'
@@ -87,10 +91,10 @@ class Llvm33 < Formula
 
   def ver; '3.3'; end # version suffix
 
-  def install
-    # LLVM installs its own standard library which confuses stdlib checking.
-    cxxstdlib_check :skip
+  # LLVM installs its own standard library which confuses stdlib checking.
+  cxxstdlib_check :skip
 
+  def install
     if build.with? "python" and build.include? 'disable-shared'
       raise 'The Python bindings need the shared library.'
     end
@@ -234,7 +238,7 @@ class Llvm33 < Formula
     end
   end
 
-  def test
+  test do
     system "#{bin}/llvm-config-#{ver}", "--version"
   end
 
@@ -260,3 +264,22 @@ class Llvm33 < Formula
     s
   end
 end
+
+__END__
+diff --git a/Makefile.rules b/Makefile.rules
+index f0c542b..ec05ac3 100644
+--- a/Makefile.rules
++++ b/Makefile.rules
+@@ -571,9 +571,9 @@ ifeq ($(HOST_OS),Darwin)
+   DARWIN_VERSION := `sw_vers -productVersion`
+  endif
+   # Strip a number like 10.4.7 to 10.4
+-  DARWIN_VERSION := $(shell echo $(DARWIN_VERSION)| sed -E 's/(10.[0-9]).*/\1/')
++  DARWIN_VERSION := $(shell echo $(DARWIN_VERSION)| sed -E 's/(10.[0-9]+).*/\1/')
+   # Get "4" out of 10.4 for later pieces in the makefile.
+-  DARWIN_MAJVERS := $(shell echo $(DARWIN_VERSION)| sed -E 's/10.([0-9]).*/\1/')
++  DARWIN_MAJVERS := $(shell echo $(DARWIN_VERSION)| sed -E 's/10.([0-9]+).*/\1/')
+ 
+   LoadableModuleOptions := -Wl,-flat_namespace -Wl,-undefined,suppress
+   SharedLinkOptions := -dynamiclib
+

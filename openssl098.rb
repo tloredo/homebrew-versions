@@ -1,9 +1,9 @@
 require 'formula'
 
 class Openssl098 < Formula
-  homepage 'http://www.openssl.org'
-  url 'http://www.openssl.org/source/openssl-0.9.8za.tar.gz'
-  sha1 'aadca1eb1a103a5536b24e1ed7e45051e2939731'
+  homepage 'https://www.openssl.org'
+  url 'https://www.openssl.org/source/openssl-0.9.8zb.tar.gz'
+  sha256 '950e2298237de1697168debd42860bf41ead618e0c03dc9a3a56e23258e435be'
 
   keg_only :provided_by_osx
 
@@ -11,6 +11,7 @@ class Openssl098 < Formula
     args = %W[./Configure
                --prefix=#{prefix}
                --openssldir=#{etc}/openssl
+               no-ssl2
                zlib-dynamic
                shared
              ]
@@ -27,10 +28,5 @@ class Openssl098 < Formula
     system "make"
     system "make test"
     system "make", "install", "MANDIR=#{man}", "MANSUFFIX=ssl"
-  end
-
-  def caveats; <<-EOS.undent
-    Note that the libraries built tend to be 32-bit only, even on Snow Leopard.
-    EOS
   end
 end

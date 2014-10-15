@@ -2,27 +2,72 @@ require 'formula'
 
 class Llvm35 < Formula
   homepage  'http://llvm.org/'
+
+  stable do
+    url 'http://llvm.org/releases/3.5.0/llvm-3.5.0.src.tar.xz'
+    sha1 '58d817ac2ff573386941e7735d30702fe71267d5'
+
+    resource 'clang' do
+      url 'http://llvm.org/releases/3.5.0/cfe-3.5.0.src.tar.xz'
+      sha1 '834cee2ed8dc6638a486d8d886b6dce3db675ffa'
+    end
+
+    resource 'clang-tools-extra' do
+      url 'http://llvm.org/releases/3.5.0/clang-tools-extra-3.5.0.src.tar.xz'
+      sha1 '74a84493e3313c180490a4affbb92d61ee4f0d21'
+    end
+
+    resource 'compiler-rt' do
+      url 'http://llvm.org/releases/3.5.0/compiler-rt-3.5.0.src.tar.xz'
+      sha1 '61f3e78088ce4a0787835036f2d3c61ede11e928'
+    end
+
+    resource 'polly' do
+      url 'http://llvm.org/releases/3.5.0/polly-3.5.0.src.tar.xz'
+      sha1 '74a2c80f12dc2645e4e77d330c8b7e0f53a5709c'
+    end
+
+    resource 'lld' do
+      url 'http://llvm.org/releases/3.5.0/lld-3.5.0.src.tar.xz'
+      sha1 '13c88e1442b482b3ffaff5934f0a2b51cab067e5'
+    end
+
+    resource 'libcxx' do
+      url 'http://llvm.org/releases/3.5.0/libcxx-3.5.0.src.tar.xz'
+      sha1 'c98beed86ae1adf9ab7132aeae8fd3b0893ea995'
+    end
+
+    resource 'libcxxabi' do
+      url 'http://llvm.org/releases/3.5.0/libcxxabi-3.5.0.src.tar.xz'
+      sha1 '31ffde04899449ae754a39c3b4e331a73a51a831'
+    end if MacOS.version <= :snow_leopard
+  end
+
   head do
     url 'http://llvm.org/git/llvm.git'
 
     resource 'clang' do
-      url 'http://llvm.org/git/clang.git'
+      url 'http://llvm.org/git/clang.git', :branch => 'release_35'
     end
 
     resource 'clang-tools-extra' do
-      url 'http://llvm.org/git/clang-tools-extra.git'
+      url 'http://llvm.org/git/clang-tools-extra.git', :branch => 'release_35'
     end
 
     resource 'compiler-rt' do
-      url 'http://llvm.org/git/compiler-rt.git'
+      url 'http://llvm.org/git/compiler-rt.git', :branch => 'release_35'
     end
 
     resource 'polly' do
-      url 'http://llvm.org/git/polly.git'
+      url 'http://llvm.org/git/polly.git', :branch => 'release_35'
+    end
+
+    resource 'lld' do
+      url 'http://llvm.org/git/lld.git'
     end
 
     resource 'libcxx' do
-      url 'http://llvm.org/git/libcxx.git'
+      url 'http://llvm.org/git/libcxx.git', :branch => 'release_35'
     end
 
     resource 'libcxxabi' do
@@ -30,26 +75,48 @@ class Llvm35 < Formula
     end if MacOS.version <= :snow_leopard
   end
 
+  resource 'isl' do
+    url 'http://isl.gforge.inria.fr/isl-0.13.tar.bz2'
+    sha1 '3904274c84fb3068e4f59b6a6b0fe29e7a2b7010'
+  end
+
+  resource 'cloog' do
+    url 'http://repo.or.cz/w/cloog.git/snapshot/22643c94eba7b010ae4401c347289f4f52b9cd2b.tar.gz'
+    sha1 '5409629e2fbe38035e8071c81601317a1a699309'
+  end
+
   option :universal
   option 'with-libcxx', 'Build libc++ standard library support'
   option 'with-clang', 'Build Clang C/ObjC/C++ frontend'
+  option 'with-lld', 'Build LLD linker'
   option 'with-asan', 'Include support for -faddress-sanitizer (from compiler-rt)'
   option 'disable-shared', "Don't build LLVM as a shared library"
   option 'all-targets', 'Build all target backends'
   option 'rtti', 'Build with C++ RTTI'
   option 'disable-assertions', 'Speeds up LLVM, but provides less debug information'
 
+  # required to build cloog
+  depends_on "autoconf" => :build
+  depends_on "automake" => :build
+  depends_on "libtool"  => :build
+  depends_on "pkg-config" => :build
+
   depends_on :python => :recommended
   depends_on 'gmp'
-  depends_on 'isl'
-  depends_on 'cloog'
   depends_on 'libffi' => :recommended
 
   def ver; '3.5'; end # version suffix
 
+  # LLVM installs its own standard library which confuses stdlib checking.
+  cxxstdlib_check :skip
+
+  # Apple's libstdc++ is too old to build LLVM
+  fails_with :gcc
+  fails_with :llvm
+
   def install
-    # LLVM installs its own standard library which confuses stdlib checking.
-    cxxstdlib_check :skip
+    # Apple's libstdc++ is too old to build LLVM
+    ENV.libcxx if ENV.compiler == :clang
 
     if build.with? "python" and build.include? 'disable-shared'
       raise 'The Python bindings need the shared library.'
@@ -66,6 +133,7 @@ class Llvm35 < Formula
     polly_buildpath = buildpath/'tools/polly'
     clang_buildpath = buildpath/'tools/clang'
     clang_tools_extra_buildpath = buildpath/'tools/clang/tools/extra'
+    lld_buildpath = buildpath/'tools/lld'
     compiler_rt_buildpath = buildpath/'projects/compiler-rt'
     libcxx_buildpath = buildpath/'projects/libcxx'
     libcxxabi_buildpath = buildpath/'libcxxabi' # build failure if put in projects due to no Makefile
@@ -73,6 +141,7 @@ class Llvm35 < Formula
     polly_buildpath.install resource('polly')
     clang_buildpath.install resource('clang') if build.with? 'clang'
     clang_tools_extra_buildpath.install resource('clang-tools-extra') if build.with? 'clang'
+    lld_buildpath.install resource('lld') if build.with? 'lld'
     compiler_rt_buildpath.install resource('compiler-rt') if build.with? 'asan'
     libcxx_buildpath.install resource('libcxx') if build.with? 'libcxx'
 
@@ -89,15 +158,40 @@ class Llvm35 < Formula
 
     install_prefix = lib/"llvm-#{ver}"
 
+    gmp_prefix = Formula["gmp"].opt_prefix
+    isl_prefix = install_prefix/'libexec/isl'
+    cloog_prefix = install_prefix/'libexec/cloog'
+
+    resource('isl').stage do
+      system "./configure", "--disable-dependency-tracking",
+                            "--disable-silent-rules",
+                            "--prefix=#{isl_prefix}",
+                            "--with-gmp=system",
+                            "--with-gmp-prefix=#{gmp_prefix}"
+      system "make"
+      system "make", "install"
+    end
+
+    resource('cloog').stage do
+      system "./autogen.sh"
+      system "./configure", "--disable-dependency-tracking",
+                            "--disable-silent-rules",
+                            "--prefix=#{cloog_prefix}",
+                            "--with-gmp-prefix=#{gmp_prefix}",
+                            "--with-isl-prefix=#{isl_prefix}"
+      system "make"
+      system "make", "install"
+    end
+
     args = [
       "--prefix=#{install_prefix}",
       "--enable-optimized",
       # As of LLVM 3.1, attempting to build ocaml bindings with Homebrew's
       # OCaml 3.12.1 results in errors.
       "--disable-bindings",
-      "--with-gmp=#{Formula["gmp"].opt_prefix}",
-      "--with-isl=#{Formula["isl"].opt_prefix}",
-      "--with-cloog=#{Formula["cloog"].opt_prefix}"
+      "--with-gmp=#{gmp_prefix}",
+      "--with-isl=#{isl_prefix}",
+      "--with-cloog=#{cloog_prefix}"
     ]
 
     if build.include? 'all-targets'
@@ -188,7 +282,7 @@ class Llvm35 < Formula
     end
   end
 
-  def test
+  test do
     system "#{bin}/llvm-config-#{ver}", "--version"
   end
 

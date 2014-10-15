@@ -5,6 +5,7 @@ class Ruby186 < Formula
   url 'http://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p420.tar.bz2'
   mirror 'http://mirrorservice.org/sites/ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p420.tar.bz2'
   sha256 '5ed3e6b9ebcb51baf59b8263788ec9ec8a65fbb82286d952dd3eb66e22d9a09f'
+  revision 1
 
   # Otherwise it fails when building bigdecimal by trying to load
   # files from the system ruby instead of the one it's building
@@ -34,8 +35,13 @@ class Ruby186 < Formula
 
   def install
     args = %W[--prefix=#{prefix} --enable-shared]
+
+    if build.universal?
+      ENV.universal_binary
+      args << "--with-arch=#{Hardware::CPU.universal_archs.join(",")}"
+    end
+
     args << "--program-suffix=186" if build.with? "suffix"
-    args << "--with-arch=#{Hardware::CPU.universal_archs.join(',')}" if build.universal?
     args << "--with-out-ext=tk" if build.without? "tcltk"
     args << "--disable-install-doc" if build.without? "doc"
     args << "--disable-dtrace" unless MacOS::CLT.installed?

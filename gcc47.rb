@@ -47,10 +47,10 @@ class Gcc47 < Formula
   # https://trac.macports.org/browser/trunk/dports/lang/gcc47/files/gcc-PR-53453.patch
   patch :DATA
 
-  def install
-    # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
-    cxxstdlib_check :skip
+  # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
+  cxxstdlib_check :skip
 
+  def install
     # GCC will suffer build errors if forced to use a particular linker.
     ENV.delete 'LD'
 

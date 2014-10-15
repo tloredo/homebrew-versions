@@ -5,6 +5,7 @@ class Subversion17 < Formula
   url 'http://mirror.cogentco.com/pub/apache/subversion/subversion-1.7.14.tar.bz2'
   mirror 'http://archive.apache.org/dist/subversion/subversion-1.7.14.tar.bz2'
   sha1 'b35254a844d0b221a3fd8e80974ac75119d77b94'
+  revision 1
 
   option :universal
   option 'java', 'Build Java bindings'

@@ -39,7 +39,7 @@ class Valgrind36 < Formula
     system "make install"
   end
 
-  def test
+  test do
     system "#{bin}/valgrind", "ls", "-l"
   end
 end

@@ -4,6 +4,7 @@ class Postgresql91 < Formula
   homepage 'http://www.postgresql.org/'
   url 'http://ftp.postgresql.org/pub/source/v9.1.13/postgresql-9.1.13.tar.bz2'
   sha256 '20f8aa5dfcb47688ca6b6c41340cac61712d9cf87c34d58b0a75bb2f85d89b7f'
+  revision 1
 
   depends_on 'openssl'
   depends_on 'readline'

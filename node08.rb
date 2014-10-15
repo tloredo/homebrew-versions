@@ -59,7 +59,7 @@ class Node08 < Formula
 
   # Fixes double-free issue. See https://github.com/joyent/node/issues/6427
   # Should be fixed if they ever do a v0.8 release.
-  patch :p1, :DATA
+  patch :DATA
 
   def install
     # Lie to `xcode-select` for now to work around a GYP bug that affects

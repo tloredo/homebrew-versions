@@ -4,6 +4,7 @@ class Postgresql8 < Formula
   homepage 'http://www.postgresql.org/'
   url 'http://ftp.postgresql.org/pub/source/v8.4.21/postgresql-8.4.21.tar.bz2'
   sha256 '388f67e59f2a16c27e84f50656f5d755adf3d0a883138366d091aa0c727c1e2c'
+  revision 1
 
   depends_on 'openssl'
   depends_on 'readline'

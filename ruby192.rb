@@ -2,8 +2,8 @@ require 'formula'
 
 class Ruby192 < Formula
   homepage 'http://www.ruby-lang.org/en/'
-  url 'http://cache.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p320.tar.bz2'
-  sha256 '6777f865cfa21ffdc167fcc4a7da05cb13aab1bd9e59bfcda82c4b32f75e6b51'
+  url 'http://cache.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p330.tar.bz2'
+  sha256 '6d3487ea8a86ad0fa78a8535078ff3c7a91ca9f99eff0a6a08e66c6e6bf2040f'
 
   depends_on 'pkg-config' => :build
   depends_on 'readline'
@@ -19,34 +19,84 @@ class Ruby192 < Formula
   end
 
   def install
-    args = %W[--prefix=#{prefix}
-              --enable-shared]
+    args = %W[--prefix=#{prefix} --enable-shared]
+
+    if build.universal?
+      ENV.universal_binary
+      args << "--with-arch=#{Hardware::CPU.universal_archs.join(",")}"
+    end
 
     args << "--program-suffix=192" if build.with? 'suffix'
-    args << "--with-arch=x86_64,i386" if build.universal?
-
-    # Put gem, site and vendor folders in the HOMEBREW_PREFIX
-    ruby_lib = HOMEBREW_PREFIX/"lib/ruby"
-    (ruby_lib/'site_ruby').mkpath
-    (ruby_lib/'vendor_ruby').mkpath
-    (ruby_lib/'gems').mkpath
-
-    (lib/'ruby').install_symlink ruby_lib/'site_ruby',
-                                 ruby_lib/'vendor_ruby',
-                                 ruby_lib/'gems'
 
     system "./configure", *args
     system "make"
     system "make install"
     system "make install-doc" if build.with? 'doc'
 
+    (lib/"ruby/#{abi_version}/rubygems/defaults/operating_system.rb").write rubygems_config
   end
 
-  def caveats; <<-EOS.undent
-    NOTE: By default, gem installed binaries will be placed into:
-      #{opt_prefix}/bin
+  def abi_version
+    "1.9.1"
+  end
 
-    You may want to add this to your PATH.
+  def rubygems_config; <<-EOS.undent
+    module Gem
+      class << self
+        alias :old_default_dir :default_dir
+        alias :old_default_path :default_path
+        alias :old_default_bindir :default_bindir
+      end
+
+      def self.default_dir
+        path = [
+          "#{HOMEBREW_PREFIX}",
+          "lib",
+          "ruby",
+          "gems",
+          "#{abi_version}"
+        ]
+
+        @default_dir ||= File.join(*path)
+      end
+
+      def self.private_dir
+        path = if defined? RUBY_FRAMEWORK_VERSION then
+                 [
+                   File.dirname(RbConfig::CONFIG['sitedir']),
+                   'Gems',
+                   RbConfig::CONFIG['ruby_version']
+                 ]
+               elsif RbConfig::CONFIG['rubylibprefix'] then
+                 [
+                  RbConfig::CONFIG['rubylibprefix'],
+                  'gems',
+                  RbConfig::CONFIG['ruby_version']
+                 ]
+               else
+                 [
+                   RbConfig::CONFIG['libdir'],
+                   ruby_engine,
+                   'gems',
+                   RbConfig::CONFIG['ruby_version']
+                 ]
+               end
+
+        @private_dir ||= File.join(*path)
+      end
+
+      def self.default_path
+        if Gem.user_home && File.exist?(Gem.user_home)
+          [user_dir, default_dir, private_dir]
+        else
+          [default_dir, private_dir]
+        end
+      end
+
+      def self.default_bindir
+        "#{HOMEBREW_PREFIX}/bin"
+      end
+    end
     EOS
   end
 end

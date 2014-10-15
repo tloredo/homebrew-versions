@@ -4,6 +4,7 @@ class Mongodb24 < Formula
   homepage 'http://www.mongodb.org/'
   url 'http://downloads.mongodb.org/src/mongodb-src-r2.4.10.tar.gz'
   sha1 'faf1f41d45934bcb30684cfed95f5d3c698663a0'
+  revision 1
 
   patch do
     url 'https://github.com/mongodb/mongo/commit/be4bc7.diff'

@@ -10,9 +10,9 @@ class Gcc49 < Formula
       end
     elsif Hardware::CPU.type == :ppc
       if MacOS.prefer_64_bit?
-        'ppc64'
+        'powerpc64'
       else
-        'ppc'
+        'powerpc'
       end
     end
   end
@@ -22,9 +22,9 @@ class Gcc49 < Formula
   end
 
   homepage 'http://gcc.gnu.org'
-  url 'http://ftpmirror.gnu.org/gcc/gcc-4.9.0/gcc-4.9.0.tar.bz2'
-  mirror 'ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.9.0/gcc-4.9.0.tar.bz2'
-  sha1 'fbde8eb49f2b9e6961a870887cf7337d31cd4917'
+  url "http://ftpmirror.gnu.org/gcc/gcc-4.9.1/gcc-4.9.1.tar.bz2"
+  mirror "ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.9.1/gcc-4.9.1.tar.bz2"
+  sha1 "3f303f403053f0ce79530dae832811ecef91197e"
 
   head 'svn://gcc.gnu.org/svn/gcc/branches/gcc-4_9-branch'
 
@@ -43,10 +43,16 @@ class Gcc49 < Formula
   depends_on 'isl011'
   depends_on 'ecj' if build.include? 'enable-java' or build.include? 'enable-all-languages'
 
-  def install
-    # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
-    cxxstdlib_check :skip
+  # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
+  cxxstdlib_check :skip
 
+  # Fix 10.10 issues: https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=215251
+  patch do
+    url "https://raw.githubusercontent.com/DomT4/scripts/6c0e48921/Homebrew_Resources/Gcc/gcc1010.diff"
+    sha1 "083ec884399218584aec76ab8f2a0db97c12a3ba"
+  end
+
+  def install
     # GCC will suffer build errors if forced to use a particular linker.
     ENV.delete 'LD'
 
