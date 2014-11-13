@@ -2,9 +2,8 @@ require 'formula'
 
 class Ruby193 < Formula
   homepage 'http://www.ruby-lang.org/en/'
-  url 'http://cache.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p547.tar.bz2'
-  sha256 'ef588ed3ff53009b4c1833c83187ae252dd6c20db45e21a326cd4a16a102ef4c'
-  revision 2
+  url 'http://cache.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p550.tar.bz2'
+  sha256 'd3da003896db47fb10ba4d2e0285eea7fe8cdc785b86c02ebad5bc9cdeaa4748'
 
   option :universal
   option 'with-suffix', 'Suffix commands with "193"'

@@ -60,6 +60,12 @@ class Gcc48 < Formula
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip
 
+  # Fix compilation on 10.10
+  patch :p0 do
+    url "https://trac.macports.org/export/126996/trunk/dports/lang/gcc48/files/patch-10.10.diff"
+    sha1 "4fb0ededa7b8105c3bdffa15469b589b272b7788"
+  end
+
   def install
     # GCC will suffer build errors if forced to use a particular linker.
     ENV.delete 'LD'

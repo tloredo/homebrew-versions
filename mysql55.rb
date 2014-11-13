@@ -2,11 +2,12 @@ require 'formula'
 
 class Mysql55 < Formula
   homepage 'http://dev.mysql.com/doc/refman/5.5/en/'
-  url 'http://downloads.mysql.com/archives/mysql-5.5/mysql-5.5.30.tar.gz'
-  sha1 'd7e31246d29f6ed4a9c4b966d6896bf920b68351'
+  url 'http://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.40.tar.gz'
+  sha1 'b93a1b14ab2de390014e99b4293e7835da133196'
 
   depends_on 'cmake' => :build
   depends_on 'pidof' unless MacOS.version >= :mountain_lion
+  depends_on "openssl"
 
   option :universal
   option 'with-tests', 'Build with unit tests'

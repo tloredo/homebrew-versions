@@ -2,8 +2,8 @@ require 'formula'
 
 class Ruby20 < Formula
   homepage 'https://www.ruby-lang.org/'
-  url 'http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p576.tar.bz2'
-  sha256 '8cfdbffc81cebd1d25304225ffadc7dcb612a500c81ba6f5f95c5296dfa62059'
+  url 'http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p594.tar.bz2'
+  sha256 'e5aee3cf36898315f87771a5e657c81befb88b6afa585b70aaa57c47cc0e99a4'
 
   option :universal
   option 'with-suffix', 'Suffix commands with "20"'

@@ -246,7 +246,7 @@ class Llvm33 < Formula
     s = ''
 
     if build.with? 'clang'
-      s += "Extra tools are installed in #{HOMEBREW_PREFIX/"share/clang-#{ver}"}."
+      s += "Extra tools are installed in #{HOMEBREW_PREFIX}/share/clang-#{ver}."
     end
 
     if build.with? 'libcxx'

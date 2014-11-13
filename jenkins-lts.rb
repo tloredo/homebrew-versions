@@ -2,8 +2,8 @@ require 'formula'
 
 class JenkinsLts < Formula
   homepage 'http://jenkins-ci.org/#stable'
-  url "http://mirrors.jenkins-ci.org/war-stable/1.565.2/jenkins.war"
-  sha1 "f14b4479236df26b1b4fdd26c2256c296bab1a2e"
+  url "http://mirrors.jenkins-ci.org/war-stable/1.565.3/jenkins.war"
+  sha1 "d45e2d14430517453d96adff81abb58bd981fe81"
   conflicts_with 'jenkins',
     :because => 'both use the same data directory: $HOME/.jenkins'
 

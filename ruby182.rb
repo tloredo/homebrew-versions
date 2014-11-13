@@ -29,6 +29,7 @@ class Ruby182 < Formula
   # ossl_x509stctx_set_time() definition taken from 1.8.6
   # Second patch backports a compatibility fix from Ruby 1.8.7 for newer OpenSSL versions
   # Third patch fixes the type of a macro, also taken from 1.8.7
+  # Fourth patch fixes another OpenSSL macro, taken from Ruby 2.1.4
   patch :DATA
 
   def install
@@ -147,3 +148,26 @@ index 1b8f76a..73fdd03 100644
  {						\
      type *t;					\
      int i, num;					\
+
+diff --git a/ext/openssl/ossl_ssl.c b/ext/openssl/ossl_ssl.c
+index c4569c7..d6f8822 100644
+--- a/ext/openssl/ossl_ssl.c
++++ b/ext/openssl/ossl_ssl.c
+@@ -96,13 +96,16 @@ struct {
+     const char *name;
+     SSL_METHOD *(*func)(void);
+ } ossl_ssl_method_tab[] = {
+-#define OSSL_SSL_METHOD_ENTRY(name) { #name, name##_method }
++#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+     OSSL_SSL_METHOD_ENTRY(TLSv1),
+     OSSL_SSL_METHOD_ENTRY(TLSv1_server),
+     OSSL_SSL_METHOD_ENTRY(TLSv1_client),
++#if defined(HAVE_SSLV2_METHOD) && defined(HAVE_SSLV2_SERVER_METHOD) && \
++        defined(HAVE_SSLV2_CLIENT_METHOD)
+     OSSL_SSL_METHOD_ENTRY(SSLv2),
+     OSSL_SSL_METHOD_ENTRY(SSLv2_server),
+     OSSL_SSL_METHOD_ENTRY(SSLv2_client),
++#endif
+     OSSL_SSL_METHOD_ENTRY(SSLv3),
+     OSSL_SSL_METHOD_ENTRY(SSLv3_server),
+     OSSL_SSL_METHOD_ENTRY(SSLv3_client),

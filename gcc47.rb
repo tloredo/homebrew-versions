@@ -22,9 +22,9 @@ class Gcc47 < Formula
   end
 
   homepage 'http://gcc.gnu.org'
-  url 'http://ftpmirror.gnu.org/gcc/gcc-4.7.3/gcc-4.7.3.tar.bz2'
-  mirror 'http://ftp.gnu.org/gnu/gcc/gcc-4.7.3/gcc-4.7.3.tar.bz2'
-  sha1 '69e02737bd6e1a7c6047d801600d39c32b9427ca'
+  url 'http://ftpmirror.gnu.org/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2'
+  mirror 'http://ftp.gnu.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2'
+  sha1 'f3359a157b3536f289c155363f1736a2c9b414db'
 
   head 'svn://gcc.gnu.org/svn/gcc/branches/gcc-4_7-branch'
 
@@ -42,10 +42,7 @@ class Gcc47 < Formula
   depends_on 'ppl011'
   depends_on 'cloog-ppl015'
   depends_on 'ecj' if build.include? 'enable-java' or build.include? 'enable-all-languages'
-
-  # Import patches from macports:
-  # https://trac.macports.org/browser/trunk/dports/lang/gcc47/files/gcc-PR-53453.patch
-  patch :DATA
+  depends_on MaximumMacOSRequirement => :mavericks
 
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip
@@ -173,95 +170,3 @@ class Gcc47 < Formula
     File.rename file, "#{dir}/#{base}-#{suffix}#{ext}"
   end
 end
-
-__END__
-http://gcc.gnu.org/ml/gcc-patches/2012-06/msg01181.html
-http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53453
-
-diff -uNr gcc/config/darwin.h gcc/config/darwin.h
---- gcc-4.7.0/gcc/config/darwin.h	2012-02-16 03:21:46.000000000 -0500
-+++ gcc-4.7.0/gcc/config/darwin.h	2012-06-08 08:54:25.000000000 -0400
-@@ -356,7 +356,9 @@
-      %{!Zbundle:%{pg:%{static:-lgcrt0.o}				    \
-                      %{!static:%{object:-lgcrt0.o}			    \
-                                %{!object:%{preload:-lgcrt0.o}		    \
--                                 %{!preload:-lgcrt1.o %(darwin_crt2)}}}}    \
-+                                 %{!preload:-lgcrt1.o                       \
-+                                 %:version-compare(>= 10.8 mmacosx-version-min= -no_new_main) \
-+                                 %(darwin_crt2)}}}}    \
-                 %{!pg:%{static:-lcrt0.o}				    \
-                       %{!static:%{object:-lcrt0.o}			    \
-                                 %{!object:%{preload:-lcrt0.o}		    \
-@@ -379,7 +381,7 @@
- #define DARWIN_CRT1_SPEC						\
-   "%:version-compare(!> 10.5 mmacosx-version-min= -lcrt1.o)		\
-    %:version-compare(>< 10.5 10.6 mmacosx-version-min= -lcrt1.10.5.o)	\
--   %:version-compare(>= 10.6 mmacosx-version-min= -lcrt1.10.6.o)	\
-+   %:version-compare(>< 10.6 10.8 mmacosx-version-min= -lcrt1.10.6.o)	\
-    %{fgnu-tm: -lcrttms.o}"
- 
- /* Default Darwin ASM_SPEC, very simple.  */
-@@ -414,6 +416,8 @@
- 
- #define TARGET_WANT_DEBUG_PUB_SECTIONS true
- 
-+#define TARGET_FORCE_AT_COMP_DIR true
-+
- /* When generating stabs debugging, use N_BINCL entries.  */
- 
- #define DBX_USE_BINCL
-diff -uNr gcc/doc/tm.texi gcc/doc/tm.texi
---- gcc-4.7.0/gcc/doc/tm.texi	2012-01-26 16:48:27.000000000 -0500
-+++ gcc-4.7.0/gcc/doc/tm.texi	2012-06-08 08:54:25.000000000 -0400
-@@ -9487,6 +9487,10 @@
- True if the @code{.debug_pubtypes} and @code{.debug_pubnames} sections should be emitted.  These sections are not used on most platforms, and in particular GDB does not use them.
- @end deftypevr
- 
-+@deftypevr {Target Hook} bool TARGET_FORCE_AT_COMP_DIR
-+True if the @code{DW_AT_comp_dir} attribute should be emitted for each  compilation unit.  This attribute is required for the darwin linker  to emit debug information.
-+@end deftypevr
-+
- @deftypevr {Target Hook} bool TARGET_DELAY_SCHED2
- True if sched2 is not to be run at its normal place.  This usually means it will be run as part of machine-specific reorg.
- @end deftypevr
-diff -uNr gcc/doc/tm.texi.in gcc/doc/tm.texi.in
---- gcc-4.7.0/gcc/doc/tm.texi.in	2012-01-26 16:48:27.000000000 -0500
-+++ gcc-4.7.0/gcc/doc/tm.texi.in	2012-06-08 08:54:25.000000000 -0400
-@@ -9386,6 +9386,8 @@
- 
- @hook TARGET_WANT_DEBUG_PUB_SECTIONS
- 
-+@hook TARGET_FORCE_AT_COMP_DIR
-+
- @hook TARGET_DELAY_SCHED2
- 
- @hook TARGET_DELAY_VARTRACK
-diff -uNr gcc/dwarf2out.c gcc/dwarf2out.c
---- gcc-4.7.0/gcc/dwarf2out.c	2012-06-04 09:24:24.000000000 -0400
-+++ gcc-4.7.0/gcc/dwarf2out.c	2012-06-08 08:54:25.000000000 -0400
-@@ -22501,7 +22501,7 @@
-   /* Add the name for the main input file now.  We delayed this from
-      dwarf2out_init to avoid complications with PCH.  */
-   add_name_attribute (comp_unit_die (), remap_debug_filename (filename));
--  if (!IS_ABSOLUTE_PATH (filename))
-+  if (!IS_ABSOLUTE_PATH (filename) || targetm.force_at_comp_dir)
-     add_comp_dir_attribute (comp_unit_die ());
-   else if (get_AT (comp_unit_die (), DW_AT_comp_dir) == NULL)
-     {
-diff -uNr gcc/target.def gcc/target.def
---- gcc-4.7.0/gcc/target.def	2012-01-26 16:48:27.000000000 -0500
-+++ gcc-4.7.0/gcc/target.def	2012-06-08 08:54:25.000000000 -0400
-@@ -2748,6 +2748,13 @@
-  bool, false)
- 
- DEFHOOKPOD
-+(force_at_comp_dir,
-+ "True if the @code{DW_AT_comp_dir} attribute should be emitted for each \
-+ compilation unit.  This attribute is required for the darwin linker \
-+ to emit debug information.",
-+ bool, false)
-+
-+DEFHOOKPOD
- (delay_sched2, "True if sched2 is not to be run at its normal place.  \
- This usually means it will be run as part of machine-specific reorg.",
- bool, false)

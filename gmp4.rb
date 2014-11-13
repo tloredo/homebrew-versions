@@ -53,12 +53,13 @@ class Gmp4 < Formula
 end
 
 __END__
-diff -r c7ed424a63b2 -r 6cd3658f5621 gmp-h.in
---- a/gmp-h.in	Tue Oct 08 14:01:35 2013 +0200
-+++ b/gmp-h.in	Tue Oct 08 14:45:27 2013 +0200
-@@ -46,13 +46,11 @@
+diff --git a/gmp-h.in b/gmp-h.in
+index d7fbc34..3c57c48 100644
+--- a/gmp-h.in
++++ b/gmp-h.in
+@@ -46,13 +46,11 @@ along with the GNU MP Library.  If not, see http://www.gnu.org/licenses/.  */
  #ifndef __GNU_MP__
- #define __GNU_MP__ 5
+ #define __GNU_MP__ 4
  
 -#define __need_size_t  /* tell gcc stddef.h we only want size_t */
  #if defined (__cplusplus)
