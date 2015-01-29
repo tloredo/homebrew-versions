@@ -1,7 +1,7 @@
 require 'formula'
 
 class Protobuf241 < Formula
-  homepage 'http://code.google.com/p/protobuf/'
+  homepage 'https://code.google.com/p/protobuf/'
   url 'https://protobuf.googlecode.com/files/protobuf-2.4.1.tar.bz2'
   sha1 'df5867e37a4b51fb69f53a8baf5b994938691d6d'
 

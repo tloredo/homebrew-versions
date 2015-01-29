@@ -21,9 +21,9 @@ class Gcc47 < Formula
     `uname -r`.chomp
   end
 
-  homepage 'http://gcc.gnu.org'
+  homepage 'https://gcc.gnu.org'
   url 'http://ftpmirror.gnu.org/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2'
-  mirror 'http://ftp.gnu.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2'
+  mirror 'https://ftp.gnu.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2'
   sha1 'f3359a157b3536f289c155363f1736a2c9b414db'
 
   head 'svn://gcc.gnu.org/svn/gcc/branches/gcc-4_7-branch'
@@ -42,10 +42,17 @@ class Gcc47 < Formula
   depends_on 'ppl011'
   depends_on 'cloog-ppl015'
   depends_on 'ecj' if build.include? 'enable-java' or build.include? 'enable-all-languages'
-  depends_on MaximumMacOSRequirement => :mavericks
+
+  fails_with :llvm
 
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip
+
+  # Fix 10.10 issues: https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=215251
+  patch :p0 do
+    url "https://trac.macports.org/export/126996/trunk/dports/lang/gcc48/files/patch-10.10.diff"
+    sha1 "4fb0ededa7b8105c3bdffa15469b589b272b7788"
+  end
 
   def install
     # GCC will suffer build errors if forced to use a particular linker.

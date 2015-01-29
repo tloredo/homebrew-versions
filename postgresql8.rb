@@ -55,7 +55,7 @@ class Postgresql8 < Formula
 
     %w[ adminpack dblink fuzzystrmatch lo uuid-ossp pg_buffercache pg_trgm
         pgcrypto tsearch2 vacuumlo xml2 intarray ].each do |a|
-      system "cd contrib/#{a}; make install"
+      system "make", "-C", "contrib/#{a}", "install"
     end
   end
 

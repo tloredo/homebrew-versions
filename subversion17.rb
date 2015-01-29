@@ -25,6 +25,7 @@ class Subversion17 < Formula
   depends_on 'sqlite'
   depends_on :python => :optional
   depends_on 'openssl'
+  depends_on :apr => :build
 
   # Building Ruby bindings requires libtool
   depends_on 'libtool' => :build if build.include? 'ruby'
@@ -99,7 +100,7 @@ class Subversion17 < Formula
             "--with-sqlite=#{Formula["sqlite"].opt_prefix}",
             "--with-ssl=#{Formula["openssl"].opt_prefix}",
             "--with-serf=#{serf_prefix}",
-            "--disable-neon-version-check",
+            "--enable-neon-version-check",
             "--disable-mod-activation",
             "--disable-nls",
             "--without-apache-libexecdir",

@@ -1,9 +1,9 @@
-require 'formula'
+require "formula"
 
 class Libpng12 < Formula
-  homepage 'http://www.libpng.org/pub/png/libpng.html'
-  url 'https://downloads.sourceforge.net/project/libpng/libpng12/1.2.50/libpng-1.2.50.tar.gz'
-  sha1 'aeb8afdfed3a8be46c9a7be4aa853bce73f03d9e'
+  homepage "http://www.libpng.org/pub/png/libpng.html"
+  url "https://downloads.sourceforge.net/project/libpng/libpng12/1.2.52/libpng-1.2.52.tar.xz"
+  sha1 "8d19d762f836bb8900efc79ef8f1c3b64ee9f658"
 
   keg_only :provided_by_osx
 
@@ -11,16 +11,11 @@ class Libpng12 < Formula
 
   def install
     ENV.universal_binary if build.universal?
-    system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}"
-    system "make install"
-    system "make test"
-
-    # Move included test programs into libexec for later use
-    libexec.install 'pngtest.png', '.libs/pngtest'
-  end
-
-  test do
-    system "#{libexec}/pngtest", "#{libexec}/pngtest.png"
-    system "/usr/bin/qlmanage", "-p", "pngout.png"
+    system "./configure", "--disable-dependency-tracking",
+                          "--disable-silent-rules",
+                          "--prefix=#{prefix}"
+    system "make"
+    system "make", "test"
+    system "make", "install"
   end
 end

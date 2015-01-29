@@ -1,7 +1,7 @@
 require 'formula'
 
 class Plowshare3 < Formula
-  homepage 'http://code.google.com/p/plowshare/'
+  homepage 'https://code.google.com/p/plowshare/'
   url 'https://plowshare.googlecode.com/files/plowshare3-snapshot-git20131103.89c1220.tar.gz'
   version '3.GIT-89c1220'
   sha1 'cbaedf3284eadbb069825b390fdec8955242bbb3'

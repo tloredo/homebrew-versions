@@ -1,5 +1,3 @@
-require 'formula'
-
 class Gcc48 < Formula
   def arch
     if Hardware::CPU.type == :intel
@@ -21,19 +19,18 @@ class Gcc48 < Formula
     `uname -r`.chomp
   end
 
-  homepage 'http://gcc.gnu.org'
-  url 'http://ftpmirror.gnu.org/gcc/gcc-4.8.3/gcc-4.8.3.tar.bz2'
-  mirror 'ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.8.3/gcc-4.8.3.tar.bz2'
-  sha1 'da0a2b9ec074f2bf624a34f3507f812ebb6e4dce'
+  homepage 'https://gcc.gnu.org'
+  url 'http://ftpmirror.gnu.org/gcc/gcc-4.8.4/gcc-4.8.4.tar.bz2'
+  mirror 'ftp://gcc.gnu.org/pub/gcc/releases/gcc-4.8.4/gcc-4.8.4.tar.bz2'
+  sha1 '40867a9ac74a054b1cee855988fd680cabf42006'
 
   head 'svn://gcc.gnu.org/svn/gcc/branches/gcc-4_8-branch'
 
   bottle do
-    sha1 '97867c4e70e4eeaf98d42ad06a23a189abec3cc7' => :tiger_g3
-    sha1 'ddda3f3dae94812ef263a57fd2abe85bf97c3ca0' => :tiger_altivec
-    sha1 '3a01572c16a8bcde4fb53554790b350c31161309' => :tiger_g4e
-    sha1 '063016966578350a6048e22b45e468c3dc991619' => :leopard_g3
-    sha1 '16a24c342514a4917533c172cddbfb3156153adc' => :leopard_altivec
+    root_url "https://downloads.sf.net/project/machomebrew/Bottles/versions"
+    sha1 "ae01f3b6be5b2b2734cc83d889ec96acbae9861c" => :yosemite
+    sha1 "941c2b6a78ec6eeb3f86d75a25a41d14673b5102" => :mavericks
+    sha1 "96c8003356a98c2a77961749eee3d33eb77711bc" => :mountain_lion
   end
 
   option 'enable-fortran', 'Build the gfortran compiler'
@@ -56,15 +53,10 @@ class Gcc48 < Formula
   depends_on 'cctools' => :build if MacOS.version < :leopard
 
   fails_with :gcc_4_0
+  fails_with :llvm
 
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip
-
-  # Fix compilation on 10.10
-  patch :p0 do
-    url "https://trac.macports.org/export/126996/trunk/dports/lang/gcc48/files/patch-10.10.diff"
-    sha1 "4fb0ededa7b8105c3bdffa15469b589b272b7788"
-  end
 
   def install
     # GCC will suffer build errors if forced to use a particular linker.
@@ -92,6 +84,7 @@ class Gcc48 < Formula
     args = [
       "--build=#{arch}-apple-darwin#{osmajor}",
       "--prefix=#{prefix}",
+      "--libdir=#{lib}/gcc/#{version_suffix}",
       "--enable-languages=#{languages.join(',')}",
       # Make most executables versioned to avoid conflicts.
       "--program-suffix=-#{version_suffix}",
@@ -101,10 +94,6 @@ class Gcc48 < Formula
       "--with-cloog=#{Formula["cloog018"].opt_prefix}",
       "--with-isl=#{Formula["isl011"].opt_prefix}",
       "--with-system-zlib",
-      # This ensures lib, libexec, include are sandboxed so that they
-      # don't wander around telling little children there is no Santa
-      # Claus.
-      "--enable-version-specific-runtime-libs",
       "--enable-libstdcxx-time=yes",
       "--enable-stage1-checking",
       "--enable-checking=release",
@@ -135,6 +124,10 @@ class Gcc48 < Formula
     else
       args << '--enable-multilib'
     end
+
+    # Ensure correct install names when linking against libgcc_s;
+    # see discussion in https://github.com/Homebrew/homebrew/pull/34303
+    inreplace "libgcc/config/t-slibgcc-darwin", "@shlib_slibdir@", "#{HOMEBREW_PREFIX}/lib/gcc/#{version_suffix}"
 
     mkdir 'build' do
       unless MacOS::CLT.installed?

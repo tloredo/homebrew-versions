@@ -1,7 +1,7 @@
 require 'formula'
 
 class Subversion16 < Formula
-  homepage 'http://subversion.apache.org/'
+  homepage 'https://subversion.apache.org/'
   url 'http://archive.apache.org/dist/subversion/subversion-1.6.23.tar.bz2'
   sha1 '578c0ec69227db041e67ade40ac4cf2ebe2cf54a'
 
@@ -34,7 +34,7 @@ class Subversion16 < Formula
 
   # Patch to find Java headers
   patch :p0 do
-    url "http://trac.macports.org/export/73004/trunk/dports/devel/subversion-javahlbindings/files/patch-configure.diff"
+    url "https://trac.macports.org/export/73004/trunk/dports/devel/subversion-javahlbindings/files/patch-configure.diff"
     sha1 "6c621f0fda9328cb4bdfaeef273376668d62c644"
   end
 

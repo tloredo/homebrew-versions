@@ -1,45 +1,73 @@
-require 'formula'
+require "formula"
 
-class Ruby192 < Formula
-  homepage 'http://www.ruby-lang.org/en/'
-  url 'http://cache.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p330.tar.bz2'
-  sha256 '6d3487ea8a86ad0fa78a8535078ff3c7a91ca9f99eff0a6a08e66c6e6bf2040f'
-
-  depends_on 'pkg-config' => :build
-  depends_on 'readline'
-  depends_on 'gdbm'
-  depends_on 'libyaml'
+class Ruby21 < Formula
+  homepage "https://www.ruby-lang.org/"
+  url "http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.5.tar.bz2"
+  sha256 "0241b40f1c731cb177994a50b854fb7f18d4ad04dcefc18acc60af73046fb0a9"
 
   option :universal
-  option 'with-suffix', 'Suffix commands with "192"'
-  option 'with-doc', 'Install documentation'
+  option "with-suffix", "Suffix commands with '21'"
+  option "with-doc", "Install documentation"
+  option "with-tcltk", "Install with Tcl/Tk support"
+
+  depends_on "pkg-config" => :build
+  depends_on "readline" => :recommended
+  depends_on "gdbm" => :optional
+  depends_on "gmp" => :optional
+  depends_on "libffi" => :optional
+  depends_on "libyaml"
+  depends_on "openssl"
+  depends_on :x11 if build.with? "tcltk"
 
   fails_with :llvm do
     build 2326
   end
 
   def install
-    args = %W[--prefix=#{prefix} --enable-shared]
+    args = %W[
+      --prefix=#{prefix} --enable-shared --disable-silent-rules
+      --with-sitedir=#{HOMEBREW_PREFIX}/lib/ruby/site_ruby
+      --with-vendordir=#{HOMEBREW_PREFIX}/lib/ruby/vendor_ruby
+    ]
 
     if build.universal?
       ENV.universal_binary
       args << "--with-arch=#{Hardware::CPU.universal_archs.join(",")}"
     end
 
-    args << "--program-suffix=192" if build.with? 'suffix'
+    args << "--program-suffix=21" if build.with? "suffix"
+    args << "--with-out-ext=tk" if build.without? "tcltk"
+    args << "--disable-install-doc" if build.without? "doc"
+    args << "--disable-dtrace" unless MacOS::CLT.installed?
+    args << "--without-gmp" if build.without? "gmp"
+
+    # Reported upstream: https://bugs.ruby-lang.org/issues/10272
+    args << "--with-setjmp-type=setjmp" if MacOS.version == :lion
+
+    paths = [
+      Formula["libyaml"].opt_prefix,
+      Formula["openssl"].opt_prefix
+    ]
+
+    %w[readline gdbm gmp libffi].each { |dep|
+      paths << Formula[dep].opt_prefix if build.with? dep
+    }
+
+    args << "--with-opt-dir=#{paths.join(":")}"
 
     system "./configure", *args
     system "make"
-    system "make install"
-    system "make install-doc" if build.with? 'doc'
+    system "make", "install"
   end
 
   def post_install
+    # Customize rubygems to look/install in the global gem directory
+    # instead of in the Cellar, making gems last across reinstalls
     (lib/"ruby/#{abi_version}/rubygems/defaults/operating_system.rb").write rubygems_config
   end
 
   def abi_version
-    "1.9.1"
+    "2.1.0"
   end
 
   def rubygems_config; <<-EOS.undent
@@ -101,9 +129,15 @@ class Ruby192 < Formula
       end
 
       def self.ruby
-        "#{opt_bin}/ruby#{"192" if build.with? "suffix"}"
+        "#{opt_bin}/ruby#{"21" if build.with? "suffix"}"
       end
     end
     EOS
+  end
+
+  test do
+    output = `#{bin}/ruby -e "puts 'hello'"`
+    assert_equal "hello\n", output
+    assert_equal 0, $?.exitstatus
   end
 end

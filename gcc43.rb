@@ -21,9 +21,9 @@ class Gcc43 < Formula
     `uname -r`.chomp
   end
 
-  homepage 'http://gcc.gnu.org'
+  homepage 'https://gcc.gnu.org'
   url 'http://ftpmirror.gnu.org/gcc/gcc-4.3.6/gcc-4.3.6.tar.bz2'
-  mirror 'http://ftp.gnu.org/gnu/gcc/gcc-4.3.6/gcc-4.3.6.tar.bz2'
+  mirror 'https://ftp.gnu.org/gnu/gcc/gcc-4.3.6/gcc-4.3.6.tar.bz2'
   sha1 'df276018e3c664c7e6aa7ca88a180515eea61663'
 
   option 'enable-fortran', 'Build the gfortran compiler'
@@ -39,27 +39,29 @@ class Gcc43 < Formula
 
   # Fix building on darwin10
   patch :p0 do
-    url "http://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/darwin10.diff"
+    url "https://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/darwin10.diff"
     sha1 "4119006a1fa18086431d3204db440750af668783"
   end
 
   # Fix multilib
   patch :p0 do
-    url "http://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/i386_multilib.diff"
+    url "https://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/i386_multilib.diff"
     sha1 "040520aa92bc25c99f2daf85d81c10118363c8dd"
   end
 
   # Build fix for Snow Leopard
   patch :p0 do
-    url "http://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/Make-lang.in.diff"
+    url "https://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/Make-lang.in.diff"
     sha1 "d2420ea96789dcf8c3a6899dd3ad2a75876fd8e0"
   end
 
   # Fix libffi fix for ppc
   patch :p0 do
-    url "http://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/ppc_fde_encoding.diff"
+    url "https://trac.macports.org/export/110576/trunk/dports/lang/gcc43/files/ppc_fde_encoding.diff"
     sha1 "49e335d085567467155ea6512ffa959a18eab0ef"
   end
+
+  fails_with :llvm
 
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip

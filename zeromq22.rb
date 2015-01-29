@@ -26,13 +26,13 @@ class Zeromq22 < Formula
     # make 32-bit
     system "CFLAGS=\"$CFLAGS -arch i386\" CXXFLAGS=\"$CXXFLAGS -arch i386\" ./configure --disable-dependency-tracking --prefix='#{prefix}' #{pgm_flags}"
     system "make"
-    system "mv src/.libs src/libs-32"
+    mv "src/.libs", "src/libs-32"
     system "make clean"
 
     # make 64-bit
     system "CFLAGS=\"$CFLAGS -arch x86_64\" CXXFLAGS=\"$CXXFLAGS -arch x86_64\" ./configure --disable-dependency-tracking --prefix='#{prefix}' #{pgm_flags}"
     system "make"
-    system "mv src/.libs/libzmq.1.dylib src/.libs/libzmq.64.dylib"
+    mv "src/.libs/libzmq.1.dylib", "src/.libs/libzmq.64.dylib"
 
     # merge UB
     system "lipo", "-create", "src/libs-32/libzmq.1.dylib",
