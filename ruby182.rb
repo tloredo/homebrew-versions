@@ -1,25 +1,30 @@
-require 'formula'
-
 class Ruby182 < Formula
-  homepage 'http://www.ruby-lang.org/en/'
-  url 'http://cache.ruby-lang.org/pub/ruby/1.8/ruby-1.8.2.tar.gz'
-  mirror 'http://mirrorservice.org/sites/ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.2.tar.bz2'
-  sha256 '34cf95791323c96dc92c672c16daaef69f00a0ba69e1c43bab893ae38b7eeb3e'
+  homepage "https://www.ruby-lang.org/en/"
+  url "http://cache.ruby-lang.org/pub/ruby/1.8/ruby-1.8.2.tar.gz"
+  mirror "http://mirrorservice.org/sites/ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.2.tar.bz2"
+  sha256 "34cf95791323c96dc92c672c16daaef69f00a0ba69e1c43bab893ae38b7eeb3e"
   revision 1
+
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "4e918f3ec701769e0e0ddfb459fb3d45a3072fe4732ac589496c316f73beb85d" => :yosemite
+    sha256 "47684646fc21d058141fba06b3b54068ac1a852f6e1c9fc9df4b4335fcc2567d" => :mavericks
+    sha256 "7791867a6be241be8af20d25727a4730040a738e66a2c21cd7046ce117be2fad" => :mountain_lion
+  end
 
   keg_only :provided_by_osx
 
   option :universal
-  option 'with-suffix', 'Suffix commands with "182"'
-  option 'with-doc', 'Install documentation'
-  option 'with-tcltk', 'Install with Tcl/Tk support'
+  option "with-suffix", "Suffix commands with '182'"
+  option "with-doc", "Install documentation"
+  option "with-tcltk", "Install with Tcl/Tk support"
 
-  depends_on 'pkg-config' => :build
-  depends_on 'readline' => :recommended
-  depends_on 'gdbm' => :optional
-  depends_on 'libyaml'
-  depends_on 'openssl' if MacOS.version >= :mountain_lion
-  depends_on :x11 if build.with? 'tcltk'
+  depends_on "pkg-config" => :build
+  depends_on "readline" => :recommended
+  depends_on "gdbm" => :optional
+  depends_on "libyaml"
+  depends_on "openssl"
+  depends_on :x11 if build.with? "tcltk"
 
   fails_with :llvm do
     build 2326
@@ -35,9 +40,9 @@ class Ruby182 < Formula
   def install
     # Otherwise it will try to link against some other libruby,
     # instead of the one it just built
-    ENV.prepend 'LDFLAGS', '-L.'
+    ENV.prepend "LDFLAGS", "-L."
 
-    args = %W[--prefix=#{prefix} --mandir=#{man} --enable-shared]
+    args = %W[--prefix=#{prefix} --mandir=#{man} --enable-shared --with-openssl-dir=#{Formula["openssl"].opt_prefix}]
 
     if build.universal?
       ENV.universal_binary
@@ -49,27 +54,19 @@ class Ruby182 < Formula
     args << "--disable-install-doc" if build.without? "doc"
     args << "--disable-dtrace" unless MacOS::CLT.installed?
 
-    # OpenSSL is deprecated on OS X 10.8 and Ruby can't find the outdated
-    # version (0.9.8r 8 Feb 2011) that ships with the system.
-    # See discussion https://github.com/sstephenson/ruby-build/issues/304
-    # and https://github.com/mxcl/homebrew/pull/18054
-    if MacOS.version >= :mountain_lion
-      args << "--with-openssl-dir=#{Formula["openssl"].opt_prefix}"
-    end
-
     # Put gem, site and vendor folders in the HOMEBREW_PREFIX
     ruby_lib = HOMEBREW_PREFIX/"lib/ruby"
-    (ruby_lib/'site_ruby').mkpath
-    (ruby_lib/'vendor_ruby').mkpath
-    (ruby_lib/'gems').mkpath
+    (ruby_lib/"site_ruby").mkpath
+    (ruby_lib/"vendor_ruby").mkpath
+    (ruby_lib/"gems").mkpath
 
-    (lib/'ruby').install_symlink ruby_lib/'site_ruby',
-                                 ruby_lib/'vendor_ruby',
-                                 ruby_lib/'gems'
+    (lib/"ruby").install_symlink ruby_lib/"site_ruby",
+                                 ruby_lib/"vendor_ruby",
+                                 ruby_lib/"gems"
 
     system "./configure", *args
     system "make"
-    system "make install"
+    system "make", "install"
   end
 end
 

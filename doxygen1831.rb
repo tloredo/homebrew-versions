@@ -1,34 +1,46 @@
-require 'formula'
-
 class Doxygen1831 < Formula
-  homepage 'http://www.doxygen.org/'
-  url 'http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.3.1.src.tar.gz'
-  mirror 'https://downloads.sourceforge.net/project/doxygen/rel-1.8.3.1/doxygen-1.8.3.1.src.tar.gz'
-  sha1 '289fc809f44b8025d45279deefbaee7680efd88f'
+  homepage "http://www.stack.nl/~dimitri/doxygen/"
+  url "http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.3.1.src.tar.gz"
+  mirror "https://downloads.sourceforge.net/project/doxygen/rel-1.8.3.1/doxygen-1.8.3.1.src.tar.gz"
+  sha256 "0c749f68101b6c04ccb0d9696dd37836a6ba62cd8002add275058a975ee72b55"
 
-  option 'with-dot', 'Build with dot command support from Graphviz.'
-  option 'with-doxywizard', 'Build GUI frontend with qt support.'
-  option 'with-libclang', 'Build with libclang support.'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    cellar :any
+    sha256 "64977dcd670dad96123eb960e0d3c10aabc77a54581fcd80b1d739e2944bfa66" => :yosemite
+    sha256 "75ea3c6a589dee81e8ca790a9c9a17aa008be2dd8c392add690a01cf37e91a63" => :mavericks
+    sha256 "e9ca771c72c9ca33d4a3cd5b0def2059c061b156e348e651c2b4d023f1106688" => :mountain_lion
+  end
 
-  depends_on 'graphviz' if build.with? 'dot'
-  depends_on 'qt' if build.with? 'doxywizard'
-  depends_on 'llvm' => 'with-clang' if build.with? 'libclang'
+  option "with-graphviz", "Build with dot command support from Graphviz."
+  option "with-doxywizard", "Build GUI frontend with qt support."
+  option "with-libclang", "Build with libclang support."
 
-  patch :DATA if build.with? 'doxywizard'
+  deprecated_option "with-dot" => "with-graphviz"
+
+  depends_on "graphviz" => :optional
+  depends_on "qt" if build.with? "doxywizard"
+  depends_on "llvm" => "with-clang" if build.with? "libclang"
+
+  # Fixes for --with-doxywizard
+  patch :DATA
 
   def install
     # libclang is installed under #{HOMEBREW_PREFIX}/opt/llvm/
-    if build.with? 'libclang'
-      inreplace 'configure' do |s|
-        s.gsub! /libclang_hdr_dir=\".*$/, "libclang_hdr_dir=\"#{HOMEBREW_PREFIX}/opt/llvm/include\""
-        s.gsub! /libclang_lib_dir=\".*$/, "libclang_lib_dir=\"#{HOMEBREW_PREFIX}/opt/llvm/lib\""
+    if build.with? "libclang"
+      args << "--with-libclang-static"
+
+      llvm = Formula["llvm"]
+      inreplace "configure" do |s|
+        s.gsub! /libclang_hdr_dir=\".*$/, "libclang_hdr_dir=\"#{llvm.opt_include}\""
+        s.gsub! /libclang_lib_dir=\".*$/, "libclang_lib_dir=\"#{llvm.opt_lib}\""
       end
     end
 
     args = ["--prefix", prefix]
-    args << '--with-libclang-static' if build.with? 'libclang'
-    args << '--with-doxywizard' if build.with? 'doxywizard'
+    args << "--with-doxywizard" if build.with? "doxywizard"
     system "./configure", *args
+
     # Per Macports:
     # https://trac.macports.org/browser/trunk/dports/textproc/doxygen/Portfile#L92
     inreplace %w[ libmd5/Makefile.libmd5
@@ -44,22 +56,27 @@ class Doxygen1831 < Formula
     # This is a terrible hack; configure finds lex/yacc OK but
     # one Makefile doesn't get generated with these, so pull
     # them out of a known good file and cram them into the other.
-    lex = ''
-    yacc = ''
+    lex = ""
+    yacc = ""
 
-    inreplace 'src/libdoxycfg.t' do |s|
-      lex = s.get_make_var 'LEX'
-      yacc = s.get_make_var 'YACC'
+    inreplace "src/libdoxycfg.t" do |s|
+      lex = s.get_make_var "LEX"
+      yacc = s.get_make_var "YACC"
     end
 
-    inreplace 'src/Makefile.libdoxycfg' do |s|
-      s.change_make_var! 'LEX', lex
-      s.change_make_var! 'YACC', yacc
+    inreplace "src/Makefile.libdoxycfg" do |s|
+      s.change_make_var! "LEX", lex
+      s.change_make_var! "YACC", yacc
     end
 
     system "make"
     # MAN1DIR, relative to the given prefix
     system "make", "MAN1DIR=share/man/man1", "install"
+  end
+
+  test do
+    system "#{bin}/doxygen", "-g"
+    system "#{bin}/doxygen", "Doxyfile"
   end
 end
 

@@ -1,18 +1,16 @@
-require 'formula'
-
 class Gcc47 < Formula
   def arch
     if Hardware::CPU.type == :intel
       if MacOS.prefer_64_bit?
-        'x86_64'
+        "x86_64"
       else
-        'i686'
+        "i686"
       end
     elsif Hardware::CPU.type == :ppc
       if MacOS.prefer_64_bit?
-        'powerpc64'
+        "powerpc64"
       else
-        'powerpc'
+        "powerpc"
       end
     end
   end
@@ -21,29 +19,49 @@ class Gcc47 < Formula
     `uname -r`.chomp
   end
 
-  homepage 'https://gcc.gnu.org'
-  url 'http://ftpmirror.gnu.org/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2'
-  mirror 'https://ftp.gnu.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2'
-  sha1 'f3359a157b3536f289c155363f1736a2c9b414db'
+  homepage "https://gcc.gnu.org"
+  url "http://ftpmirror.gnu.org/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2"
+  mirror "https://ftp.gnu.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2"
+  sha1 "f3359a157b3536f289c155363f1736a2c9b414db"
 
-  head 'svn://gcc.gnu.org/svn/gcc/branches/gcc-4_7-branch'
+  head "svn://gcc.gnu.org/svn/gcc/branches/gcc-4_7-branch"
 
-  option 'enable-fortran', 'Build the gfortran compiler'
-  option 'enable-java', 'Build the gcj compiler'
-  option 'enable-all-languages', 'Enable all compilers and languages, except Ada'
-  option 'enable-nls', 'Build with native language support (localization)'
-  option 'enable-profiled-build', 'Make use of profile guided optimization when bootstrapping GCC'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha1 "777237d7a300319a7b2b83dee6f5156975aace44" => :yosemite
+    sha1 "bf6f7e967f2ef84e334939695c03ebaf0ddbf62f" => :mavericks
+    sha1 "b906176ebbbe42371495c5cdea6fa7f85505827e" => :mountain_lion
+  end
+
+  option "with-fortran", "Build the gfortran compiler"
+  option "with-java", "Build the gcj compiler"
+  option "with-all-languages", "Enable all compilers and languages, except Ada"
+  option "with-nls", "Build with native language support (localization)"
+  option "with-profiled-build", "Make use of profile guided optimization when bootstrapping GCC"
   # enabling multilib on a host that can't run 64-bit results in build failures
-  option 'disable-multilib', 'Build without multilib support' if MacOS.prefer_64_bit?
+  option "without-multilib", "Build without multilib support" if MacOS.prefer_64_bit?
 
-  depends_on 'gmp4'
-  depends_on 'libmpc08'
-  depends_on 'mpfr2'
-  depends_on 'ppl011'
-  depends_on 'cloog-ppl015'
-  depends_on 'ecj' if build.include? 'enable-java' or build.include? 'enable-all-languages'
+  deprecated_option "enable-fortran" => "with-fortran"
+  deprecated_option "enable-java" => "with-java"
+  deprecated_option "enable-all-languages" => "with-all-languages"
+  deprecated_option "enable-nls" => "with-nls"
+  deprecated_option "enable-profiled-build" => "with-profiled-build"
+  deprecated_option "disable-multilib" => "without-multilib"
+
+  depends_on "gmp4"
+  depends_on "libmpc08"
+  depends_on "mpfr2"
+  depends_on "ppl011"
+  depends_on "cloog-ppl015"
+  depends_on "ecj" if build.with?("java") || build.with?("all-languages")
 
   fails_with :llvm
+
+  # The bottles are built on systems with the CLT installed, and do not work
+  # out of the box on Xcode-only systems due to an incorrect sysroot.
+  def pour_bottle?
+    MacOS::CLT.installed?
+  end
 
   # GCC bootstraps itself, so it is OK to have an incompatible C++ stdlib
   cxxstdlib_check :skip
@@ -56,9 +74,9 @@ class Gcc47 < Formula
 
   def install
     # GCC will suffer build errors if forced to use a particular linker.
-    ENV.delete 'LD'
+    ENV.delete "LD"
 
-    if build.include? 'enable-all-languages'
+    if build.with? "all-languages"
       # Everything but Ada, which requires a pre-existing GCC Ada compiler
       # (gnat) to bootstrap. GCC 4.6.0 add go as a language option, but it is
       # currently only compilable on Linux.
@@ -67,8 +85,8 @@ class Gcc47 < Formula
       # C, C++, ObjC compilers are always built
       languages = %w[c c++ objc obj-c++]
 
-      languages << 'fortran' if build.include? 'enable-fortran'
-      languages << 'java' if build.include? 'enable-java'
+      languages << "fortran" if build.with? "fortran"
+      languages << "java" if build.with? "java"
     end
 
     version_suffix = version.to_s.slice(/\d\.\d/)
@@ -76,7 +94,7 @@ class Gcc47 < Formula
     args = [
       "--build=#{arch}-apple-darwin#{osmajor}",
       "--prefix=#{prefix}",
-      "--enable-languages=#{languages.join(',')}",
+      "--enable-languages=#{languages.join(",")}",
       # Make most executables versioned to avoid conflicts.
       "--program-suffix=-#{version_suffix}",
       "--with-gmp=#{Formula["gmp4"].opt_prefix}",
@@ -104,64 +122,60 @@ class Gcc47 < Formula
     # -fPIC, -shared, -ldl and -rdynamic."
     args << "--enable-plugin" if MacOS.version > :tiger
 
-    args << '--disable-nls' unless build.include? 'enable-nls'
+    args << "--disable-nls" if build.without? "nls"
 
-    if build.include? 'enable-java' or build.include? 'enable-all-languages'
+    if build.with?("java") || build.with?("all-languages")
       args << "--with-ecj-jar=#{Formula["ecj"].opt_prefix}/share/java/ecj.jar"
     end
 
-    if !MacOS.prefer_64_bit? || build.include?('disable-multilib')
-      args << '--disable-multilib'
+    if !MacOS.prefer_64_bit? || build.without?("multilib")
+      args << "--disable-multilib"
     else
-      args << '--enable-multilib'
+      args << "--enable-multilib"
     end
 
-    mkdir 'build' do
+    mkdir "build" do
       unless MacOS::CLT.installed?
         # For Xcode-only systems, we need to tell the sysroot path.
-        # 'native-system-header's will be appended
+        # "native-system-headers" will be appended
         args << "--with-native-system-header-dir=/usr/include"
         args << "--with-sysroot=#{MacOS.sdk_path}"
       end
 
-      system '../configure', *args
+      system "../configure", *args
 
-      if build.include? 'enable-profiled-build'
+      if build.with? "profiled-build"
         # Takes longer to build, may bug out. Provided for those who want to
         # optimise all the way to 11.
-        system 'make profiledbootstrap'
+        system "make", "profiledbootstrap"
       else
-        system 'make bootstrap'
+        system "make", "bootstrap"
       end
 
       # At this point `make check` could be invoked to run the testsuite. The
       # deja-gnu and autogen formulae must be installed in order to do this.
-
-      system 'make install'
+      system "make", "install"
     end
 
     # Handle conflicts between GCC formulae.
-
     # Remove libffi stuff, which is not needed after GCC is built.
     Dir.glob(prefix/"**/libffi.*") { |file| File.delete file }
-
     # Rename libiberty.a.
     Dir.glob(prefix/"**/libiberty.*") { |file| add_suffix file, version_suffix }
-
     # Rename man7.
     Dir.glob(man7/"*.7") { |file| add_suffix file, version_suffix }
 
     # Even when suffixes are appended, the info pages conflict when
-    # install-info is run. TODO fix this.
+    # install-info is run. Fix this.
     info.rmtree
 
     # Rename java properties
-    if build.include? 'enable-java' or build.include? 'enable-all-languages'
+    if build.with?("java") || build.with?("all-languages")
       config_files = [
         "#{lib}/logging.properties",
         "#{lib}/security/classpath.security",
         "#{lib}/i386/logging.properties",
-        "#{lib}/i386/security/classpath.security"
+        "#{lib}/i386/security/classpath.security",
       ]
 
       config_files.each do |file|
@@ -170,10 +184,23 @@ class Gcc47 < Formula
     end
   end
 
-  def add_suffix file, suffix
+  def add_suffix(file, suffix)
     dir = File.dirname(file)
     ext = File.extname(file)
     base = File.basename(file, ext)
     File.rename file, "#{dir}/#{base}-#{suffix}#{ext}"
+  end
+
+  test do
+    (testpath/"hello-c.c").write <<-EOS.undent
+      #include <stdio.h>
+      int main()
+      {
+        puts("Hello, world!");
+        return 0;
+      }
+    EOS
+    system bin/"gcc-4.7", "-o", "hello-c", "hello-c.c"
+    assert_equal "Hello, world!\n", `./hello-c`
   end
 end

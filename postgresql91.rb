@@ -1,20 +1,32 @@
-require 'formula'
-
 class Postgresql91 < Formula
-  homepage 'http://www.postgresql.org/'
-  url 'http://ftp.postgresql.org/pub/source/v9.1.13/postgresql-9.1.13.tar.bz2'
-  sha256 '20f8aa5dfcb47688ca6b6c41340cac61712d9cf87c34d58b0a75bb2f85d89b7f'
+  homepage "http://www.postgresql.org/"
+  url "http://ftp.postgresql.org/pub/source/v9.1.13/postgresql-9.1.13.tar.bz2"
+  sha256 "20f8aa5dfcb47688ca6b6c41340cac61712d9cf87c34d58b0a75bb2f85d89b7f"
   revision 1
 
-  depends_on 'openssl'
-  depends_on 'readline'
-  depends_on 'libxml2' if MacOS.version == :leopard
-  depends_on 'ossp-uuid' => :recommended
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    revision 1
+    sha1 "3ed2bef957fd33aee30e2b13ad619896d88cd9cd" => :yosemite
+    sha1 "a83dd2327c6224eddba96a8c19a6bdda7cee60de" => :mavericks
+    sha1 "11ae73d1ea600b00d3b0a522e200cbb42686c369" => :mountain_lion
+  end
 
-  option '32-bit'
-  option 'no-python', 'Build without Python support'
-  option 'no-perl', 'Build without Perl support'
-  option 'enable-dtrace', 'Build with DTrace support'
+  depends_on "openssl"
+  depends_on "readline"
+  depends_on "libxml2" if MacOS.version == :leopard
+  depends_on "ossp-uuid" => :recommended
+
+  option "32-bit"
+  option "without-python", "Build without Python support"
+  option "without-perl", "Build without Perl support"
+  option "without-tcl", "Build without Tcl support"
+  option "with-dtrace", "Build with DTrace support"
+
+  deprecated_option "no-python" => "without-python"
+  deprecated_option "no-perl" => "without-perl"
+  deprecated_option "no-tcl" => "without-tcl"
+  deprecated_option "enable-dtrace" => "with-dtrace"
 
   # Fix PL/Python build: https://github.com/mxcl/homebrew/issues/11162
   # Fix uuid-ossp build issues: http://archives.postgresql.org/pgsql-general/2012-07/msg00654.php
@@ -37,29 +49,39 @@ class Postgresql91 < Formula
       --with-libxslt
     ]
 
-    args << "--with-ossp-uuid" if build.with? 'ossp-uuid'
-    args << "--with-python" unless build.include? 'no-python'
-    args << "--with-perl" unless build.include? 'no-perl'
-    args << "--enable-dtrace" if build.include? 'enable-dtrace'
+    args << "--with-ossp-uuid" if build.with? "ossp-uuid"
+    args << "--with-python" if build.with? "python"
+    args << "--with-perl" if build.with? "perl"
 
-    if build.with? 'ossp-uuid'
-      ENV.append 'CFLAGS', `uuid-config --cflags`.strip
-      ENV.append 'LDFLAGS', `uuid-config --ldflags`.strip
-      ENV.append 'LIBS', `uuid-config --libs`.strip
+    # The CLT is required to build tcl support on 10.7 and 10.8 because tclConfig.sh is not part of the SDK
+    if build.with?("tcl") && (MacOS.version >= :mavericks || MacOS::CLT.installed?)
+      args << "--with-tcl"
+
+      if File.exist?("#{MacOS.sdk_path}/usr/lib/tclConfig.sh")
+        args << "--with-tclconfig=#{MacOS.sdk_path}/usr/lib"
+      end
     end
 
-    if not build.build_32_bit? and MacOS.prefer_64_bit? and not build.include? 'no-python'
+    args << "--enable-dtrace" if build.with? "dtrace"
+
+    if build.with? "ossp-uuid"
+      ENV.append "CFLAGS", `uuid-config --cflags`.strip
+      ENV.append "LDFLAGS", `uuid-config --ldflags`.strip
+      ENV.append "LIBS", `uuid-config --libs`.strip
+    end
+
+    if not build.build_32_bit? and MacOS.prefer_64_bit? and build.with? "python"
       args << "ARCHFLAGS='-arch x86_64'"
       check_python_arch
     end
 
     if build.build_32_bit?
-      ENV.append 'CFLAGS', '-arch i386'
-      ENV.append 'LDFLAGS', '-arch i386'
+      ENV.append "CFLAGS", "-arch i386"
+      ENV.append "LDFLAGS", "-arch i386"
     end
 
     system "./configure", *args
-    system "make install-world"
+    system "make", "install-world"
   end
 
   def check_python_arch
@@ -89,62 +111,60 @@ class Postgresql91 < Formula
 
   def caveats
     s = <<-EOS
-    # Build Notes
+      # Build Notes
 
-    If builds of PostgreSQL 9 are failing and you have version 8.x installed,
-    you may need to remove the previous version first. See:
-      https://github.com/mxcl/homebrew/issues/issue/2510
+      If builds of PostgreSQL 9 are failing and you have version 8.x installed,
+      you may need to remove the previous version first. See:
+        https://github.com/mxcl/homebrew/issues/issue/2510
 
-    To build plpython against a specific Python, set PYTHON prior to brewing:
-      PYTHON=/usr/local/bin/python  brew install postgresql
-    See:
-      http://www.postgresql.org/docs/9.1/static/install-procedure.html
+      To build plpython against a specific Python, set PYTHON prior to brewing:
+        PYTHON=/usr/local/bin/python  brew install postgresql
+      See:
+        http://www.postgresql.org/docs/9.1/static/install-procedure.html
 
-    # Create/Upgrade a Database
+      # Create/Upgrade a Database
 
-    If this is your first install, create a database with:
-      initdb #{var}/postgres -E utf8
+      If this is your first install, create a database with:
+        initdb #{var}/postgres -E utf8
 
-    To migrate existing data from a previous major version (pre-9.1) of PostgreSQL, see:
-      http://www.postgresql.org/docs/9.1/static/upgrading.html
+      To migrate existing data from a previous major version (pre-9.1) of PostgreSQL, see:
+        http://www.postgresql.org/docs/9.1/static/upgrading.html
 
-    # Loading Extensions
+      # Loading Extensions
 
-    By default, Homebrew builds all available Contrib extensions.  To see a list of all
-    available extensions, from the psql command line, run:
-      SELECT * FROM pg_available_extensions;
+      By default, Homebrew builds all available Contrib extensions.  To see a list of all
+      available extensions, from the psql command line, run:
+        SELECT * FROM pg_available_extensions;
 
-    To load any of the extension names, navigate to the desired database and run:
-      CREATE EXTENSION [extension name];
+      To load any of the extension names, navigate to the desired database and run:
+        CREATE EXTENSION [extension name];
 
-    For instance, to load the tablefunc extension in the current database, run:
-      CREATE EXTENSION tablefunc;
+      For instance, to load the tablefunc extension in the current database, run:
+        CREATE EXTENSION tablefunc;
 
-    For more information on the CREATE EXTENSION command, see:
-      http://www.postgresql.org/docs/9.1/static/sql-createextension.html
-    For more information on extensions, see:
-      http://www.postgresql.org/docs/9.1/static/contrib.html
+      For more information on the CREATE EXTENSION command, see:
+        http://www.postgresql.org/docs/9.1/static/sql-createextension.html
+      For more information on extensions, see:
+        http://www.postgresql.org/docs/9.1/static/contrib.html
 
-    # Other
+      # Other
 
-    Some machines may require provisioning of shared memory:
-      http://www.postgresql.org/docs/current/static/kernel-resources.html#SYSVIPC
+      Some machines may require provisioning of shared memory:
+        http://www.postgresql.org/docs/current/static/kernel-resources.html#SYSVIPC
     EOS
 
-    s << gem_caveats if MacOS.prefer_64_bit?
-    return s
-  end
+    if MacOS.prefer_64_bit?
+      s << "\n" << <<-EOS.undent
+        When installing the postgres gem, including ARCHFLAGS is recommended:
+          ARCHFLAGS="-arch x86_64" gem install pg
 
-  def gem_caveats; <<-EOS.undent
-    When installing the postgres gem, including ARCHFLAGS is recommended:
-      ARCHFLAGS="-arch x86_64" gem install pg
-
-    To install gems without sudo, see the Homebrew wiki.
-    EOS
+        To install gems without sudo, see the Homebrew wiki.
+      EOS
+    end
+    s
   end
 
   plist_options :manual => "pg_ctl -D #{HOMEBREW_PREFIX}/var/postgres -l #{HOMEBREW_PREFIX}/var/postgres/server.log start"
-
 
   def plist; <<-EOS.undent
     <?xml version="1.0" encoding="UTF-8"?>
@@ -171,6 +191,10 @@ class Postgresql91 < Formula
     </plist>
     EOS
   end
+
+  test do
+    system "#{bin}/initdb", testpath
+  end
 end
 
 
@@ -184,7 +208,7 @@ __END__
 -override python_libspec = -framework Python
 -override python_additional_libs =
  endif
- 
+
  # If we don't have a shared library and the platform doesn't allow it
 --- a/contrib/uuid-ossp/uuid-ossp.c	2012-07-30 18:34:53.000000000 -0700
 +++ b/contrib/uuid-ossp/uuid-ossp.c	2012-07-30 18:35:03.000000000 -0700

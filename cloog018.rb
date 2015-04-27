@@ -8,6 +8,11 @@ class Cloog018 < Formula
   sha1 '85f620a26aabf6a934c44ca40a9799af0952f863'
 
   bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    cellar :any
+    sha256 "2a246c9d1cac00f85866d23ac9f4270335fc69131fe1b9fd72c6e756496ed72d" => :yosemite
+    sha256 "94abba0efbb32299a4a26ea1d961cac7c3fb35a5c26211578b50ef17226207ba" => :mavericks
+    sha256 "4270983ad42e6446088df5329427fc50a29e59986c07c0b184c9e8217bf31f23" => :mountain_lion
     sha1 'cf10ded3221cd5dae2c2980f6635da02716f62f4' => :tiger_g3
     sha1 'c8d8b01d1ae10e786b6999720c8054cb5de7a033' => :tiger_altivec
     sha1 'b9cbf9174d588eaf1a6020c7ad66398b252c197d' => :leopard_g3

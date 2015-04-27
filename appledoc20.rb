@@ -1,21 +1,20 @@
-require 'formula'
-
 # The 2.1 series requires Lion or newer.
 # 2.0.6 is provided for Snow Leopard compatibility.
 class Appledoc20 < Formula
-  homepage 'http://appledoc.gentlebytes.com/'
-  url 'https://github.com/tomaz/appledoc/archive/v2.0.6.tar.gz'
-  sha1 '3d76172339cbfea24ef53f55e2452cc78930413e'
+  homepage "http://appledoc.gentlebytes.com/"
+  url "https://github.com/tomaz/appledoc/archive/v2.0.6.tar.gz"
+  sha256 "f62bed39a0e65eab4035ea82784e7a9347b3bfc7c424e6e855b8ff698628cc21"
 
   depends_on :xcode
 
-  # Actually works with pre-503 clang, but we don't have a way to
-  # express this yet.
-  # clang 5.1 (build 503) removed support for Objective C GC, which
-  # appledoc 2.0 requires to build.
   # It's actually possible to build with GC disabled, but not advisable.
   # See: https://github.com/tomaz/appledoc/issues/439
-  fails_with :clang
+  fails_with :clang do
+    cause <<-EOS.undent
+      clang 5.1 (build 503) removed support for Objective C GC
+      which appledoc 2.0 requires to build.
+    EOS
+  end
 
   def install
     xcodebuild "-project", "appledoc.xcodeproj",
@@ -31,6 +30,6 @@ class Appledoc20 < Formula
   end
 
   test do
-    system "#{bin}/appledoc", "--version"
+    system bin/"appledoc", "--version"
   end
 end

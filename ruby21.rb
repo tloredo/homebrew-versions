@@ -1,9 +1,14 @@
-require "formula"
-
 class Ruby21 < Formula
   homepage "https://www.ruby-lang.org/"
-  url "http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.5.tar.bz2"
-  sha256 "0241b40f1c731cb177994a50b854fb7f18d4ad04dcefc18acc60af73046fb0a9"
+  url "http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.6.tar.bz2"
+  sha256 "7b5233be35a4a7fbd64923e42efb70b7bebd455d9d6f9d4001b3b3a6e0aa6ce9"
+
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "4ea3c2a6303a1e26495d286ddd6c74c2212d710feb7fad6ce66c0ea0561bfda0" => :yosemite
+    sha256 "8e8f1dbe8306a1f62e45fc686a585bc59432e2adf2d4dbbb87c0b18390eddaa5" => :mavericks
+    sha256 "a150b28300ddce6e297075781a5b43b5185a2a884464071a7cd69075c7d311e4" => :mountain_lion
+  end
 
   option :universal
   option "with-suffix", "Suffix commands with '21'"

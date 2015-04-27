@@ -1,9 +1,9 @@
-require 'formula'
-
 class Solr36 < Formula
-  homepage 'http://lucene.apache.org/solr/'
-  url 'http://archive.apache.org/dist/lucene/solr/3.6.2/apache-solr-3.6.2.tgz'
-  sha1 '3a1a40542670ea6efec246a081053732c5503ec1'
+  homepage "http://lucene.apache.org/solr/"
+  url "https://archive.apache.org/dist/lucene/solr/3.6.2/apache-solr-3.6.2.tgz"
+  sha256 "537426dcbdd0dc82dd5bf16b48b6bcaf87cb4049c1245eea8dcb79eeaf3e7ac6"
+
+  depends_on :java
 
   def script; <<-EOS.undent
     #!/bin/sh
@@ -16,11 +16,11 @@ class Solr36 < Formula
   end
 
   def install
-    libexec.install Dir['*']
-    (bin+'solr36').write script
-    (var+'logs'+name).mkpath
+    libexec.install Dir["*"]
+    (bin+"solr36").write script
+    (var+"logs"+name).mkpath
     (etc+name).mkpath
-    (etc+name).install Dir[libexec+'example/multicore'] unless (etc+name+'multicore').exist?
+    (etc+name).install Dir[libexec+"example/multicore"] unless (etc+name+"multicore").exist?
   end
 
   def caveats; <<-EOS.undent
@@ -44,7 +44,7 @@ class Solr36 < Formula
             <string>/usr/bin/java</string>
             <string>-Djetty.home=#{libexec}/example</string>
             <string>-Djetty.logs=#{var}/logs/#{name}</string>
-            <string>-Dsolr.solr.home=#{etc+name+'multicore'}</string>
+            <string>-Dsolr.solr.home=#{etc+name+"multicore"}</string>
             <string>-jar</string>
             <string>#{libexec}/example/start.jar</string>
           </array>
@@ -57,5 +57,9 @@ class Solr36 < Formula
       </dict>
       </plist>
     EOS
+  end
+
+  test do
+    system "solr36"
   end
 end

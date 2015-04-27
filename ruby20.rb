@@ -1,22 +1,27 @@
-require 'formula'
-
 class Ruby20 < Formula
-  homepage 'https://www.ruby-lang.org/'
-  url 'http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p598.tar.bz2'
-  sha256 '67b2a93690f53e12b635ba1bcdbd41e8c5593f13d575fea92fdd8801ca088f0f'
+  homepage "https://www.ruby-lang.org/"
+  url "http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p645.tar.bz2"
+  sha256 "2dcdcf9900cb923a16d3662d067bc8c801997ac3e4a774775e387e883b3683e9"
+
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "e9b01603d66cc5553ca7f9d3594fc0ce6d186aea4c85aaa1af1c241404452e39" => :yosemite
+    sha256 "0e79ce291d4f661d7872f7deb1d809a419a7c6599483a422bc7787049f0cebb0" => :mavericks
+    sha256 "6840f190b6a853a2fa885f24cf60b203424aa2a7eb887ab5f051848f072de30e" => :mountain_lion
+  end
 
   option :universal
-  option 'with-suffix', 'Suffix commands with "20"'
-  option 'with-doc', 'Install documentation'
-  option 'with-tcltk', 'Install with Tcl/Tk support'
+  option "with-suffix", "Suffix commands with '20'"
+  option "with-doc", "Install documentation"
+  option "with-tcltk", "Install with Tcl/Tk support"
 
-  depends_on 'pkg-config' => :build
-  depends_on 'readline' => :recommended
-  depends_on 'gdbm' => :optional
-  depends_on 'libffi' => :optional
-  depends_on 'libyaml'
-  depends_on 'openssl'
-  depends_on :x11 if build.with? 'tcltk'
+  depends_on "pkg-config" => :build
+  depends_on "readline" => :recommended
+  depends_on "gdbm" => :optional
+  depends_on "libffi" => :optional
+  depends_on "libyaml"
+  depends_on "openssl"
+  depends_on :x11 if build.with? "tcltk"
 
   fails_with :llvm do
     build 2326
@@ -49,7 +54,7 @@ class Ruby20 < Formula
 
     system "./configure", *args
     system "make"
-    system "make install"
+    system "make", "install"
   end
 
   def post_install
@@ -123,5 +128,9 @@ class Ruby20 < Formula
       end
     end
     EOS
+  end
+
+  test do
+    system bin/"ruby", "--version"
   end
 end

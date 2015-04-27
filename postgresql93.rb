@@ -4,10 +4,11 @@ class Postgresql93 < Formula
   sha256 "14176ffb1f90a189e7626214365be08ea2bfc26f26994bafb4235be314b9b4b0"
 
   bottle do
-    root_url "https://downloads.sf.net/project/machomebrew/Bottles/versions"
-    sha1 "03ee0754bd8d4533f46b5a9c9fc4f92d10ab4330" => :yosemite
-    sha1 "8505dfee60752f920e9c75fce19729c4ba76b857" => :mavericks
-    sha1 "aa9e5d577b52b253ac211b1b8b79f26d197d2112" => :mountain_lion
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    revision 1
+    sha1 "0598d137c62368c3e0ac0be97787c27a2eeb1949" => :yosemite
+    sha1 "062503ba8546a0d8a4e5d25fdd75ab3a532cfdd5" => :mavericks
+    sha1 "a0fa7de58e3db44271393d56607b4dfb539dcf3d" => :mountain_lion
   end
 
   depends_on "openssl"
@@ -58,7 +59,7 @@ class Postgresql93 < Formula
     args << "--with-perl" if build.with? "perl"
 
     # The CLT is required to build tcl support on 10.7 and 10.8 because tclConfig.sh is not part of the SDK
-    unless MacOS.version < :mavericks && MacOS::CLT.installed? || build.without?("tcl")
+    if build.with?("tcl") && (MacOS.version >= :mavericks || MacOS::CLT.installed?)
       args << "--with-tcl"
 
       if File.exist?("#{MacOS.sdk_path}/usr/lib/tclConfig.sh")

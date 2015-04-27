@@ -1,17 +1,24 @@
-require 'formula'
-
 class Hdf4 < Formula
-  homepage 'http://www.hdfgroup.org'
-  url 'http://www.hdfgroup.org/ftp/HDF/releases/HDF4.2.10/src/hdf-4.2.10.tar.bz2'
-  sha1 '5163543895728dabb536a0659b3d965d55bccf74'
+  homepage "http://www.hdfgroup.org"
+  url "http://www.hdfgroup.org/ftp/HDF/releases/HDF4.2.10/src/hdf-4.2.10.tar.bz2"
+  sha1 "5163543895728dabb536a0659b3d965d55bccf74"
 
-  option 'enable-fortran', 'Build Fortran interface.'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha1 "c2c52d5a07559d08d3eb5af108ed8b839721ed88" => :yosemite
+    sha1 "ac39325b98c7baac776f8a28e4fb138a25ea7340" => :mavericks
+    sha1 "cc499e59d40db001001ef595539e1d79dcf18c96" => :mountain_lion
+  end
 
-  depends_on 'cmake' => :build
-  depends_on 'pkg-config' => :build
-  depends_on 'szip'
-  depends_on 'jpeg'
-  depends_on :fortran if build.include? 'enable-fortran'
+  option "with-fortran", "Build Fortran interface."
+
+  deprecated_option "enable-fortran" => "with-fortran"
+
+  depends_on "cmake" => :build
+  depends_on "pkg-config" => :build
+  depends_on "szip"
+  depends_on "jpeg"
+  depends_on :fortran => :optional
 
   # redefine library name to "df" from "hdf".  this seems to be an artifact
   # of using cmake that needs to be corrected for compatibility with
@@ -19,33 +26,34 @@ class Hdf4 < Formula
   patch :DATA
 
   def install
-    ENV['SZIP_INSTALL'] = HOMEBREW_PREFIX
+    ENV["SZIP_INSTALL"] = HOMEBREW_PREFIX
 
     args = std_cmake_args
     args.concat [
-      '-DBUILD_SHARED_LIBS=ON',
-      '-DBUILD_TESTING=OFF',
-      '-DHDF4_BUILD_TOOLS=ON',
-      '-DHDF4_BUILD_UTILS=ON',
-      '-DHDF4_BUILD_WITH_INSTALL_NAME=ON',
-      '-DHDF4_ENABLE_JPEG_LIB_SUPPORT=ON',
-      '-DHDF4_ENABLE_NETCDF=OFF', # Conflict. Just install NetCDF for this.
-      '-DHDF4_ENABLE_SZIP_ENCODING=ON',
-      '-DHDF4_ENABLE_SZIP_SUPPORT=ON',
-      '-DHDF4_ENABLE_Z_LIB_SUPPORT=ON'
+      "-DBUILD_SHARED_LIBS=ON",
+      "-DBUILD_TESTING=OFF",
+      "-DHDF4_BUILD_TOOLS=ON",
+      "-DHDF4_BUILD_UTILS=ON",
+      "-DHDF4_BUILD_WITH_INSTALL_NAME=ON",
+      "-DHDF4_ENABLE_JPEG_LIB_SUPPORT=ON",
+      "-DHDF4_ENABLE_NETCDF=OFF", # Conflict. Just install NetCDF for this.
+      "-DHDF4_ENABLE_SZIP_ENCODING=ON",
+      "-DHDF4_ENABLE_SZIP_SUPPORT=ON",
+      "-DHDF4_ENABLE_Z_LIB_SUPPORT=ON"
     ]
-    if build.include? 'enable-fortran'
+
+    if build.with? "fortran"
       args.concat %W[-DHDF4_BUILD_FORTRAN=ON -DCMAKE_Fortran_MODULE_DIRECTORY=#{include}]
     else
-      args << '-DHDF4_BUILD_FORTRAN=OFF'
+      args << "-DHDF4_BUILD_FORTRAN=OFF"
     end
 
-    mkdir 'build' do
-      system 'cmake', '..', *args
-      system 'make install'
+    mkdir "build" do
+      system "cmake", "..", *args
+      system "make", "install"
 
       # Remove stray ncdump executable as it conflicts with NetCDF.
-      rm (bin + 'ncdump')
+      rm (bin+"ncdump")
     end
   end
 
@@ -56,6 +64,7 @@ class Hdf4 < Formula
     EOS
   end
 end
+
 __END__
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index ba2cf13..27a3df4 100644

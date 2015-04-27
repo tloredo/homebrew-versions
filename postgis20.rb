@@ -1,33 +1,37 @@
-require 'formula'
+# Maintainer Note: THIS FORMULA IS GOING TO BREAK WHEN HOMEBREW_SANDBOX BECOMES MANDATORY
+# https://github.com/Homebrew/homebrew-versions/pull/774
 
 class Postgis20 < Formula
-  homepage 'http://postgis.net'
-  url 'http://download.osgeo.org/postgis/source/postgis-2.0.4.tar.gz'
-  sha1 '34d5d88faed11e800ec480742e3a80ba460e1400'
+  homepage "http://postgis.net"
+  url "http://download.osgeo.org/postgis/source/postgis-2.0.7.tar.gz"
+  sha256 "35877fd5b591202941c2ae0a6f3fd84b0856649712f760375f17d9903c4c922a"
 
-  option 'with-gui', 'Build shp2pgsql-gui in addition to command line tools'
+  keg_only "This formula conflicts with PostGIS in Homebrew/homebrew."
 
-  keg_only 'Avoid conflict with main PostGIS package'
+  def pour_bottle?
+    # Postgres extensions must live in the Postgres prefix, which precludes
+    # bottling: https://github.com/Homebrew/homebrew/issues/10247
+    # Overcoming this will likely require changes in Postgres itself.
+    false
+  end
+
+  option "with-gui", "Build shp2pgsql-gui in addition to command line tools"
 
   depends_on "autoconf" => :build
   depends_on "automake" => :build
   depends_on "libtool" => :build
-
-  depends_on 'gpp' => :build
-  depends_on 'postgresql92'
-  depends_on 'proj'
-  depends_on 'geos'
-
-  depends_on 'gtk+' if build.with? 'gui'
+  depends_on "gpp" => :build
+  depends_on "postgresql92"
+  depends_on "proj"
+  depends_on "geos"
+  depends_on "gtk+" if build.with? "gui"
 
   # For GeoJSON and raster handling
-  depends_on 'json-c'
-  depends_on 'gdal'
+  depends_on "gdal"
+  depends_on "json-c"
 
   # Force GPP to be used when pre-processing SQL files. See:
   # http://trac.osgeo.org/postgis/ticket/1694
-  # Fix linking aganist json-c, upstream in:
-  # https://github.com/postgis/postgis/commit/1c988618c9448dcdc43bc8ffe4ef8ff1d4dae838
   patch :DATA
 
   def install
@@ -51,37 +55,38 @@ class Postgis20 < Formula
       # PostGIS gets all of it's compiler flags from the PGXS makefiles. This
       # makes it nigh impossible to tell the buildsystem where our keg-only
       # gettext installations are.
-      "--disable-nls"
+      "--disable-nls",
     ]
-    args << '--with-gui' if build.with? 'gui'
 
-    system './autogen.sh'
-    system './configure', *args
-    system 'make'
+    args << "--with-gui" if build.with? "gui"
+
+    system "./autogen.sh"
+    system "./configure", *args
+    system "make"
 
     # PostGIS includes the PGXS makefiles and so will install __everything__
     # into the Postgres keg instead of the PostGIS keg. Unfortunately, some
     # things have to be inside the Postgres keg in order to be function. So, we
     # install everything to a staging directory and manually move the pieces
     # into the appropriate prefixes.
-    mkdir 'stage'
-    system 'make', 'install', "DESTDIR=#{buildpath}/stage"
+    mkdir "stage"
+    system "make", "install", "DESTDIR=#{buildpath}/stage"
 
     # Install PostGIS plugin libraries into the Postgres keg so that they can
     # be loaded and so PostGIS databases will continue to function even if
     # PostGIS is removed.
-    (postgres_realpath/'lib').install Dir['stage/**/*.so']
+    (postgres_realpath/"lib").install Dir["stage/**/*.so"]
 
     # Install extension scripts to the Postgres keg.
     # `CREATE EXTENSION postgis;` won't work if these are located elsewhere.
-    (postgres_realpath/'share/postgresql92/extension').install Dir['stage/**/extension/*']
+    (postgres_realpath/"share/postgresql92/extension").install Dir["stage/**/extension/*"]
 
-    bin.install Dir['stage/**/bin/*']
-    lib.install Dir['stage/**/lib/*']
-    include.install Dir['stage/**/include/*']
+    bin.install Dir["stage/**/bin/*"]
+    lib.install Dir["stage/**/lib/*"]
+    include.install Dir["stage/**/include/*"]
 
     # Stand-alone SQL files will be installed the share folder
-    (share/'postgis').install Dir['stage/**/contrib/postgis-2.0/*']
+    (share/"postgis").install Dir["stage/**/contrib/postgis-2.0/*"]
 
     # Extension scripts
     bin.install %w[
@@ -95,7 +100,7 @@ class Postgis20 < Formula
       utils/test_joinestimation.pl
     ]
 
-    man1.install Dir['doc/**/*.1']
+    man1.install Dir["doc/**/*.1"]
   end
 
   def caveats;
@@ -143,14 +148,3 @@ index 68d9240..8514041 100644
  AC_SUBST([SQLPP])
 
  dnl
-@@ -740,7 +731,9 @@ CPPFLAGS="$CPPFLAGS_SAVE"
- dnl Ensure we can link against libjson
- LIBS_SAVE="$LIBS"
- LIBS="$JSON_LDFLAGS"
--AC_CHECK_LIB([json], [json_object_get], [HAVE_JSON=yes], [], [])
-+AC_CHECK_LIB([json-c], [json_object_get], [HAVE_JSON=yes; JSON_LDFLAGS="-ljson-c"], [
-+  AC_CHECK_LIB([json], [json_object_get], [HAVE_JSON=yes; JSON_LDFLAGS="-ljson"], [], [])
-+], [])
- LIBS="$LIBS_SAVE"
-
- if test "$HAVE_JSON" = "yes"; then

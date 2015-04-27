@@ -1,13 +1,19 @@
-require 'formula'
-
 class Gstreamer010 < Formula
-  homepage 'http://gstreamer.freedesktop.org/'
-  url 'http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-0.10.36.tar.bz2'
-  sha256 'e556a529e0a8cf1cd0afd0cab2af5488c9524e7c3f409de29b5d82bb41ae7a30'
+  homepage "http://gstreamer.freedesktop.org/"
+  url "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-0.10.36.tar.bz2"
+  sha256 "e556a529e0a8cf1cd0afd0cab2af5488c9524e7c3f409de29b5d82bb41ae7a30"
 
-  depends_on 'pkg-config' => :build
-  depends_on 'gettext'
-  depends_on 'glib'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "2d305985473d2ee608f04e28198b4231cba5c1086ee54bf9bbfb1e01c191aae7" => :yosemite
+    sha256 "d86e6b0320b8938ddb393f1786fa97773867584d205af43ea26c383dfbe793e5" => :mavericks
+    sha256 "93b0ef760f8d1a8971689ca83adb7acef0a5904fe262f537f27bbd730ed2b814" => :mountain_lion
+  end
+
+  depends_on "pkg-config" => :build
+  depends_on "gettext"
+  depends_on "glib"
+  depends_on "libxml2" # w/o: "error: Could not link libxml2 test program"
 
   # Fix sed version detection for 10.8
   # Reported and fixed upstream:
@@ -29,7 +35,7 @@ class Gstreamer010 < Formula
                           "--disable-dependency-tracking",
                           "--enable-introspection=no"
     system "make"
-    system "make install"
+    system "make", "install"
   end
 end
 

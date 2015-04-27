@@ -8,6 +8,11 @@ class Mpfr2 < Formula
   sha1 '7ca93006e38ae6e53a995af836173cf10ee7c18c'
 
   bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    cellar :any
+    sha256 "b567a28e0d55497325ab97f73e302414bd66e48068c8dbb1092d453704ffe523" => :yosemite
+    sha256 "3f195ad79022a35840e46f0726f623c932ad5ef72516a873615078f053867aef" => :mavericks
+    sha256 "ab7c5d3f5aa1adb76d27b66389c9aa65ee4a52c7c23d40dee30b8ca78653ca17" => :mountain_lion
     sha1 'd146a7ec89d73a64906ed3fa930d1062b0cb5479' => :tiger_g3
     sha1 '87ea4788e631dd447a92e78cc183093ecf4157be' => :tiger_altivec
     sha1 '6ffec69dca10ac3cb40a6dc7d1221200eb7d888a' => :leopard_g3

@@ -1,15 +1,18 @@
 class Gnupg21 < Formula
   homepage "https://www.gnupg.org/"
-  url "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.1.tar.bz2"
-  mirror "http://mirror.switch.ch/ftp/mirror/gnupg/gnupg/gnupg-2.1.1.tar.bz2"
-  sha1 "3d11fd150cf86f842d077437edb119a775c7325d"
+  url "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.3.tar.bz2"
+  mirror "https://www.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.3.tar.bz2"
+  sha256 "213e7fb0d74bb4e53a2d3153f309ddc077528f2cfffa2af85f2a20cc7875c8ed"
 
   bottle do
-    root_url "https://downloads.sf.net/project/machomebrew/Bottles/versions"
-    sha1 "d41f7959c3e464cd5967f5f7ffd407bd8cc6d087" => :yosemite
-    sha1 "7bfd0d59ad50efb6031cee27565b11e9bcaa07e4" => :mavericks
-    sha1 "a2e18e41cc3e8dd318bd932950999c93300f85db" => :mountain_lion
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    revision 1
+    sha256 "c7aa93e32cbac2aed4ab86253a30223c6217042c6fa50b0a4dc1fa803d356982" => :yosemite
+    sha256 "2adbf1e360b01b0e20b5d6bbf6ac2835d91bc2b30ff9fa5f7ee2d230d04dd1a3" => :mavericks
+    sha256 "03bfc7c9116649ed00af8232a7edf6dee1eaaea887d56563b45cd1dc3a625bf5" => :mountain_lion
   end
+
+  option "with-gpgsplit", "Additionally install the gpgsplit utility"
 
   head do
     url "git://git.gnupg.org/gnupg.git"
@@ -28,7 +31,6 @@ class Gnupg21 < Formula
   depends_on "libksba"
   depends_on "libassuan"
   depends_on "pinentry"
-  depends_on "curl" if MacOS.version <= :mavericks
   depends_on "libusb-compat" => :recommended
   depends_on "readline" => :optional
   depends_on "gettext"
@@ -43,6 +45,12 @@ class Gnupg21 < Formula
         :because => "fwknop expects to use a `gpgme` with Homebrew/Homebrew's gnupg2."
   conflicts_with "gpgme",
         :because => "gpgme currently requires 1.x.x or 2.0.x."
+
+  # Remove this patch with next release.
+  patch do
+    url "http://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=patch;h=454f60399c7318fffd3de2afadd58c7a490178bd"
+    sha256 "d837aa2c3be98ecde7b7101827fcf2c67f61d5134b20c14aa649a7115c182498"
+  end
 
   def install
     (var/"run").mkpath
@@ -60,14 +68,13 @@ class Gnupg21 < Formula
       --enable-symcryptrun
     ]
 
-    args << "--enable-maintainer-mode" if build.head?
+    args << "--with-readline=#{Formula["readline"].opt_prefix}" if build.with? "readline"
 
-    if build.with? "readline"
-      args << "--with-readline=#{Formula["readline"].opt_prefix}"
+    if build.head?
+      args << "--enable-maintainer-mode"
+      system "./autogen.sh", "--force"
+      system "automake", "--add-missing"
     end
-
-    system "./autogen.sh", "--force" if build.head?
-    system "automake", "--add-missing" if build.head?
 
     # Adjust package name to fit our scheme of packaging both gnupg 1.x and
     # and 2.1.x and gpg-agent separately.
@@ -83,6 +90,9 @@ class Gnupg21 < Formula
     system "make"
     system "make", "check"
     system "make", "install"
+
+    bin.install "tools/gpgsplit" => "gpgsplit2" if build.with? "gpgsplit"
+
     # Conflicts with a manpage from the 1.x formula, and
     # gpg-zip isn't installed by this formula anyway
     rm man1/"gpg-zip.1"
@@ -106,6 +116,11 @@ class Gnupg21 < Formula
 
     For full details of the changes, please visit:
       https://www.gnupg.org/faq/whats-new-in-2.1.html
+
+    If you are upgrading to gnupg21 from gnupg2 you should execute:
+      `killall gpg-agent && gpg-agent --daemon --use-standard-socket`
+    After install. See:
+      https://github.com/Homebrew/homebrew-versions/issues/681
     EOS
   end
 

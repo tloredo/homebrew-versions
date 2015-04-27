@@ -1,18 +1,23 @@
-require 'formula'
-
 class GstPython010 < Formula
-  homepage 'http://gstreamer.freedesktop.org/'
-  url 'http://gstreamer.freedesktop.org/src/gst-python/gst-python-0.10.22.tar.bz2'
-  sha1 '7012445d921ae1b325c162500750c9b0e777201f'
+  homepage "http://gstreamer.freedesktop.org/"
+  url "http://gstreamer.freedesktop.org/src/gst-python/gst-python-0.10.22.tar.bz2"
+  sha256 "8f26f519a5bccd770864317e098e5e307fc5ad1201eb96329634b6508b253178"
 
-  depends_on 'pkg-config' => :build
-  depends_on 'homebrew/versions/gst-plugins-base010'
-  depends_on 'pygtk'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "8733d920b1b69bb171774c6e399071ed58c1a2e687c612f380947d5e1fea1e83" => :yosemite
+    sha256 "d526f793ea62bd1a298aecfb6a635105303a8230cd43338fde43e3b12161cebd" => :mavericks
+    sha256 "13be6f9f7c40553c881363bf6a494e823bf1628b0996e4183b26e03eae652b8a" => :mountain_lion
+  end
+
+  depends_on "pkg-config" => :build
+  depends_on "gst-plugins-base010"
+  depends_on "pygtk"
 
   def install
     system "./configure", "--disable-dependency-tracking",
                           "--prefix=#{prefix}"
-    system "make install"
+    system "make", "install"
   end
 
   def caveats; <<-EOS.undent
@@ -26,7 +31,7 @@ class GstPython010 < Formula
   end
 
   test do
-    (testpath/'test.py').write <<-EOS.undent
+    (testpath/"test.py").write <<-EOS.undent
       #!/usr/bin/env python
 
       import time
