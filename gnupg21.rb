@@ -1,15 +1,14 @@
 class Gnupg21 < Formula
   homepage "https://www.gnupg.org/"
-  url "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.3.tar.bz2"
-  mirror "https://www.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.3.tar.bz2"
-  sha256 "213e7fb0d74bb4e53a2d3153f309ddc077528f2cfffa2af85f2a20cc7875c8ed"
+  url "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.4.tar.bz2"
+  mirror "https://www.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.4.tar.bz2"
+  sha256 "64127eedd868510f2bccccb22c507a4878ffa07495db16a0f976c67f56426cb0"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 1
-    sha256 "c7aa93e32cbac2aed4ab86253a30223c6217042c6fa50b0a4dc1fa803d356982" => :yosemite
-    sha256 "2adbf1e360b01b0e20b5d6bbf6ac2835d91bc2b30ff9fa5f7ee2d230d04dd1a3" => :mavericks
-    sha256 "03bfc7c9116649ed00af8232a7edf6dee1eaaea887d56563b45cd1dc3a625bf5" => :mountain_lion
+    sha256 "2ccbf3c10596c8c81a624a1353e4f67b447c537ae09a25ef5e936d309f299442" => :yosemite
+    sha256 "ee6df932554bb036611098a07b3a34bf764fdfc03c45285ba312634a991e7c21" => :mavericks
+    sha256 "7e5d83d492c1d92f8502bc3c6e720bb641e71fb5ca1f5f32b912879f43cb4e91" => :mountain_lion
   end
 
   option "with-gpgsplit", "Additionally install the gpgsplit utility"
@@ -45,12 +44,6 @@ class Gnupg21 < Formula
         :because => "fwknop expects to use a `gpgme` with Homebrew/Homebrew's gnupg2."
   conflicts_with "gpgme",
         :because => "gpgme currently requires 1.x.x or 2.0.x."
-
-  # Remove this patch with next release.
-  patch do
-    url "http://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=patch;h=454f60399c7318fffd3de2afadd58c7a490178bd"
-    sha256 "d837aa2c3be98ecde7b7101827fcf2c67f61d5134b20c14aa649a7115c182498"
-  end
 
   def install
     (var/"run").mkpath

@@ -22,16 +22,17 @@ class Gcc49 < Formula
   homepage "https://gcc.gnu.org"
   url "http://ftpmirror.gnu.org/gcc/gcc-4.9.2/gcc-4.9.2.tar.bz2"
   mirror "https://ftp.gnu.org/gnu/gcc/gcc-4.9.2/gcc-4.9.2.tar.bz2"
-  sha1 "79dbcb09f44232822460d80b033c962c0237c6d8"
+  sha256 "2020c98295856aa13fda0f2f3a4794490757fc24bcca918d52cc8b4917b972dd"
   revision 1
 
   head "svn://gcc.gnu.org/svn/gcc/branches/gcc-4_9-branch"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha1 "be9c9f04d24611cdcd5558c6af79acf1ac3b25e4" => :yosemite
-    sha1 "8dc1db43666d0424579cce5ead09658f46d25790" => :mavericks
-    sha1 "f1416eeec1ebb74e133f43656ccdb03b3992210b" => :mountain_lion
+    revision 1
+    sha256 "2b1284fe314224509aa629a667cd0e00b276a9c44c5fd4cecc337d47faf4dbcc" => :yosemite
+    sha256 "6698beb47cbd336a31dd0a70ef1392be5233aa37d1f69b848dc29f162ddb50d2" => :mavericks
+    sha256 "e42520bc6bf6ea48b49092d1ab773be6e41acafa5f48370874512344cd9f8c90" => :mountain_lion
   end
 
   option "with-fortran", "Build the gfortran compiler"
@@ -103,6 +104,9 @@ class Gcc49 < Formula
       "--enable-stage1-checking",
       "--enable-checking=release",
       "--enable-lto",
+      # Use 'bootstrap-debug' build configuration to force stripping of object
+      # files prior to comparison during bootstrap (broken by Xcode 6.3).
+      "--with-build-config=bootstrap-debug",
       # A no-op unless --HEAD is built because in head warnings will
       # raise errors. But still a good idea to include.
       "--disable-werror",

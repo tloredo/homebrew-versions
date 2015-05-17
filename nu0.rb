@@ -1,14 +1,14 @@
-require 'formula'
-
 class Nu0 < Formula
-  homepage 'http://programming.nu'
-  url 'http://programming.nu/releases/Nu-0.4.0.tgz'
-  sha1 '02e0df424f18a6c6c3c3221699014018cabcd8bc'
+  homepage "http://programming.nu"
+  # Upstream link used previously is dead - Using MacPorts mirror instead.
+  url "https://distfiles.macports.org/nu/Nu-0.4.0.tgz"
+  sha256 "4fb346c4ce938b987faf4591f7a71b6d482ee622fa597a4572c5d573a6f022d1"
 
-  depends_on 'pcre'
+  depends_on "pcre"
+  depends_on MaximumMacOSRequirement => :lion
 
   def install
-    ENV['PREFIX'] = prefix
+    ENV["PREFIX"] = prefix
 
     inreplace "Makefile" do |s|
       cflags = s.get_make_var "CFLAGS"
@@ -28,9 +28,10 @@ class Nu0 < Formula
       s.gsub!('#{@destdir}/Library/Frameworks', '#{@prefix}/Library/Frameworks')
       s.sub! /^;; source files$/, <<-EOS
 ;; source files
-(set @framework_install_path "#{prefix}/Library/Frameworks")
+(set @framework_install_path "#{frameworks}")
 EOS
     end
+
     system "make"
     system "./mininush", "tools/nuke"
     bin.mkdir
@@ -40,14 +41,14 @@ EOS
   end
 
   def caveats
-    if self.installed? and File.exist? prefix+"Library/Frameworks/Nu.framework"
+    if self.installed? and File.exist? frameworks+"Nu.framework"
       return <<-EOS.undent
         Nu.framework was installed to:
-          #{prefix}/Library/Frameworks/Nu.framework
+          #{frameworks}/Nu.framework
 
         You may want to symlink this Framework to a standard OS X location,
         such as:
-          ln -s "#{prefix}/Library/Frameworks/Nu.framework" /Library/Frameworks
+          ln -s "#{frameworks}/Nu.framework" /Library/Frameworks
       EOS
     end
     return nil

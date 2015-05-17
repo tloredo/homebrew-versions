@@ -1,13 +1,15 @@
 class Elasticsearch13 < Formula
-  homepage "http://www.elasticsearch.org"
-  url "https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.9.tar.gz"
-  sha1 "ee6013d33d6371184fae970ff8f1c2d76c0834a0"
+  homepage "http://www.elastic.c://www.elastic.co/products/elasticsearch"
+  url "https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.3.9.tar.gz"
+  sha256 "9b12ceba35c4a48e3e0fdc93f0676917d10acb5ee9264e9f2f9efc1a73e540bd"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha1 "4acb7293988db4758456af6a9548ae66585a59b9" => :yosemite
-    sha1 "833cbed0257dddb0f3cd8754b56440ac04402797" => :mavericks
-    sha1 "ff97bb3f4c8f712e9c7811823a47dbbc59f08909" => :mountain_lion
+    cellar :any
+    revision 1
+    sha256 "d1e0206d619b86fe5b2b28ad7565bc83787ae0bcf10306810e6154772fdb0679" => :yosemite
+    sha256 "a54dbe8965c2eab785318710e7df60d49e50821831b314cac08017d57667e479" => :mavericks
+    sha256 "6520c0551b6da66397bf20eecf4ce988349df64515ea26725a59939f396acae6" => :mountain_lion
   end
 
   depends_on :java => "1.7+"

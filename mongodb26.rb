@@ -5,9 +5,11 @@ class Mongodb26 < Formula
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha256 "91de28fa72e54e4f60cb2c6be4ddb37884eaf55f803368934951274345860a5c" => :yosemite
-    sha256 "03cb90826ab1f955341dcf67a9d4a332dab064a3bcd942a3d837c47c37f61d98" => :mavericks
-    sha256 "f4d1a30808766f159f68d767e4abf7fd835a33847b7c011d730df94740181a7d" => :mountain_lion
+    cellar :any
+    revision 1
+    sha256 "eb8e16df2c97b154eec8b748a1939e1f8848fe63ff884dc38342ac650d9f8aa9" => :yosemite
+    sha256 "c1e07199ff333e8bb5a74ce9f546418540cccba044dae88ec792a1d19b8e0ae3" => :mavericks
+    sha256 "db314adf23ea2406a98a88c3872ab76f8879ef23cff1b56997446d02664fa663" => :mountain_lion
   end
 
   option "with-boost", "Compile using installed boost, not the version shipped with mongodb"
@@ -40,6 +42,11 @@ class Mongodb26 < Formula
     args << "--full" if build.stable?
     args << "--use-system-boost" if build.with? "boost"
     args << "--64" if MacOS.prefer_64_bit?
+
+    # Pass the --disable-warnings-as-errors flag to Scons when on Yosemite
+    # or later, otherwise 2.6.x won't build from source due to a Clang 3.5+
+    # error - https://github.com/mongodb/mongo/pull/956#issuecomment-94545753
+    args << "--disable-warnings-as-errors" if MacOS.version >= :yosemite
 
     if build.with? "openssl"
       args << "--ssl" << "--extrapath=#{Formula["openssl"].opt_prefix}"

@@ -1,7 +1,15 @@
 class Elasticsearch14 < Formula
   homepage "https://www.elastic.co/products/elasticsearch"
-  url "https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.4.tar.gz"
+  url "https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.4.4.tar.gz"
   sha256 "a3158d474e68520664debaea304be22327fc7ee1f410e0bfd940747b413e8586"
+
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    cellar :any
+    sha256 "006b25e5ab46dda1e5cf5aa3056e6fde7bb9b4898691d12ab3e5c58326ff1178" => :yosemite
+    sha256 "9fae4f91acb8cb705cca7101628e550277bbdf37676f8408f0e7740a6c1ec6b7" => :mavericks
+    sha256 "c1c92e90c30eb09984eabd8829b43380bed03379bcb81f3f5a6273773c014d07" => :mountain_lion
+  end
 
   depends_on :java => "1.7+"
 

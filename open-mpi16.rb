@@ -1,16 +1,24 @@
-require 'formula'
-
 class OpenMpi16 < Formula
-  homepage 'http://www.open-mpi.org/'
-  url 'http://www.open-mpi.org/software/ompi/v1.6/downloads/openmpi-1.6.5.tar.bz2'
-  sha1 '93859d515b33dd9a0ee6081db285a2d1dffe21ce'
+  homepage "http://www.open-mpi.org/"
+  url "http://www.open-mpi.org/software/ompi/v1.6/downloads/openmpi-1.6.5.tar.bz2"
+  sha256 "fe37bab89b5ef234e0ac82dc798282c2ab08900bf564a1ec27239d3f1ad1fc85"
 
-  option 'disable-fortran', 'Do not build the Fortran bindings'
-  option 'enable-mpi-thread-multiple', 'Enable MPI_THREAD_MULTIPLE'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "62ba62c636ccf8ecedd44429b4b5289af8580c499e85d2cc54f0d3015fd7b318" => :yosemite
+    sha256 "7146c0325758769fd48cba0565764c5c287eb53de8d47428e000546f51858bcb" => :mavericks
+    sha256 "3d2986df69b5f759c56956ee0c94a93447ef69ed5e2bc3b42ffada4d8eacdca1" => :mountain_lion
+  end
 
-  keg_only 'Conflicts with open-mpi in core repository.'
+  option "without-fortran", "Do not build the Fortran bindings"
+  option "with-mpi-thread-multiple", "Enable MPI_THREAD_MULTIPLE"
 
-  depends_on :fortran unless build.include? 'disable-fortran'
+  deprecated_option "disable-fortran" => "without-fortran"
+  deprecated_option "enable-mpi-thread-multiple" => "with-mpi-thread-multiple"
+
+  keg_only "Conflicts with open-mpi in Homebrew/homebrew"
+
+  depends_on :fortran => :recommended
 
   # Fixes error in tests, which makes them fail on clang.
   # Upstream ticket: https://svn.open-mpi.org/trac/ompi/ticket/4255
@@ -23,26 +31,46 @@ class OpenMpi16 < Formula
       --disable-silent-rules
       --enable-ipv6
     ]
-    if build.include? 'disable-fortran'
-      args << '--disable-mpi-f77' << '--disable-mpi-f90'
-    end
 
-    if build.include? 'enable-mpi-thread-multiple'
-      args << '--enable-mpi-thread-multiple'
-    end
+    args << "--disable-mpi-f77" << "--disable-mpi-f90" if build.without? "fortran"
+    args << "--enable-mpi-thread-multiple" if build.with? "mpi-thread-multiple"
 
-    system './configure', *args
-    system 'make', 'all'
-    system 'make', 'check'
-    system 'make', 'install'
+    system "./configure", *args
+    system "make", "all"
+    system "make", "check"
+    system "make", "install"
 
     # If Fortran bindings were built, there will be a stray `.mod` file
     # (Fortran header) in `lib` that needs to be moved to `include`.
-    include.install lib/'mpi.mod' if File.exist? "#{lib}/mpi.mod"
+    include.install lib/"mpi.mod" if File.exist? "#{lib}/mpi.mod"
 
     # Not sure why the wrapped script has a jar extension - adamv
-    libexec.install bin/'vtsetup.jar'
-    bin.write_jar_script libexec/'vtsetup.jar', 'vtsetup.jar'
+    libexec.install bin/"vtsetup.jar"
+    bin.write_jar_script libexec/"vtsetup.jar", "vtsetup.jar"
+  end
+
+  test do
+    (testpath/"hello.c").write <<-EOS.undent
+      #include <mpi.h>
+      #include <stdio.h>
+
+      int main()
+      {
+        int size, rank, nameLen;
+        char name[MPI_MAX_PROCESSOR_NAME];
+        MPI_Init(NULL, NULL);
+        MPI_Comm_size(MPI_COMM_WORLD, &size);
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Get_processor_name(name, &nameLen);
+        printf("[%d/%d] Hello, world! My name is %s.\\n", rank, size, name);
+        MPI_Finalize();
+        return 0;
+      }
+    EOS
+
+    system "#{bin}/mpicc", "hello.c", "-o", "hello"
+    system "./hello"
+    system "#{bin}/mpirun", "-np", "4", "./hello"
   end
 end
 

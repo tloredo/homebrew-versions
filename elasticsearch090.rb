@@ -1,9 +1,17 @@
 require 'formula'
 
 class Elasticsearch090 < Formula
-  homepage 'http://www.elasticsearch.org'
-  url 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.13.tar.gz'
-  sha1 'bc4f805f052fbefbd2b4c392b108e62f08bf8380'
+  homepage 'https://www.elastic.co/products/elasticsearch'
+  url 'https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-0.90.13.tar.gz'
+  sha256 '82904d4c564fc893a1cfc0deb4526073900072a3f4667b995881a2ec5cdfdb43'
+
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    cellar :any
+    sha256 "40c32b6fc4a72dfc08fc9b828f87f8752497a15bff279914edd739308139c206" => :yosemite
+    sha256 "9fda4444f8f94091dfaad505ece36e1918e6cd0552619c1ba202745350deefce" => :mavericks
+    sha256 "5ddf3c38b0d2c6e09f53d6094809514da7b468359032f0b208ad4c78ba1b6034" => :mountain_lion
+  end
 
   def cluster_name
     "elasticsearch_#{ENV['USER']}"

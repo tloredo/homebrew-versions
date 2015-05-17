@@ -1,16 +1,16 @@
 # This formula tracks GnuTLS stable-next. This is currently the 3.4.x branch.
 class Gnutls34 < Formula
   homepage "http://gnutls.org"
-  url "ftp://ftp.gnutls.org/gcrypt/gnutls/v3.4/gnutls-3.4.0.tar.xz"
-  mirror "http://mirrors.dotsrc.org/gcrypt/gnutls/v3.4/gnutls-3.4.0.tar.xz"
-  sha256 "b422544431bfb5c4e24a605b6c793ee34792cc791c1060562ab46eaf77f3472e"
+  url "ftp://ftp.gnutls.org/gcrypt/gnutls/v3.4/gnutls-3.4.1.tar.xz"
+  mirror "http://mirrors.dotsrc.org/gcrypt/gnutls/v3.4/gnutls-3.4.1.tar.xz"
+  sha256 "e9b5f58becf34756464216056cd5abbf04315eda80a374d02699dee83f80b12e"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
     cellar :any
-    sha256 "272bcb3fc248f0f7173a8fa867e6398ff70f5fe57ed2b5affdac54a44c174ef4" => :yosemite
-    sha256 "20a2b304a5d72f8b5b52b60cc16162e35dec917d0b87b262152fe55becdd0330" => :mavericks
-    sha256 "20a9b14a422870a14ab0ef6cf6271bd1eafc63ab0983f1951b8d9cee1207f616" => :mountain_lion
+    sha256 "15ede4ba5c02fa5dcc9e7edee0ce1df29dd5acd6d5ecc57ae0eea62ae1a692ac" => :yosemite
+    sha256 "387b22e785931178c6c5cf979ef19708136ed6babcd6596fcc31a39abb68a4a5" => :mavericks
+    sha256 "4c9792290c1b8f0ae3d39f3c8378844c8e0aa601d12dd536d4507cfe742fd0c9" => :mountain_lion
   end
 
   depends_on "pkg-config" => :build
@@ -26,12 +26,6 @@ class Gnutls34 < Formula
   fails_with :llvm do
     build 2326
     cause "Undefined symbols when linking"
-  end
-
-  # Remove this on next release
-  patch do
-    url "https://gitlab.com/gnutls/gnutls/commit/facc875f5aeb9049326e3e5cbf583c84a026c6f3.diff"
-    sha256 "5c1a5efaac6a7a6c0ece1115b05df2d58a51c8589935f200f410eb44d8c49edd"
   end
 
   def install

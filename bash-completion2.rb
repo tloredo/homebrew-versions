@@ -1,34 +1,40 @@
-require 'formula'
-
 class BashCompletion2 < Formula
-  homepage 'http://bash-completion.alioth.debian.org/'
-  url 'http://ftp.de.debian.org/debian/pool/main/b/bash-completion/bash-completion_2.1.orig.tar.bz2'
-  sha256 '2b606804a7d5f823380a882e0f7b6c8a37b0e768e72c3d4107c51fbe8a46ae4f'
+  homepage "https://bash-completion.alioth.debian.org/"
+  url "https://mirrors.kernel.org/debian/pool/main/b/bash-completion/bash-completion_2.1.orig.tar.bz2"
+  mirror "https://mirrors.ocf.berkeley.edu/debian/pool/main/b/bash-completion/bash-completion_2.1.orig.tar.bz2"
+  sha256 "2b606804a7d5f823380a882e0f7b6c8a37b0e768e72c3d4107c51fbe8a46ae4f"
   revision 2
 
-  conflicts_with 'bash-completion'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "6f33a41b2cf3b2f7b5377fc03c3878537a97c1d71f405c24f3e2e4f91ea99d8a" => :yosemite
+    sha256 "d664af0a49745230030965c62b7842c7fc94b65394b3a80f0b693e4855b59848" => :mavericks
+    sha256 "40a9bbf11f9b53bb0e2d95c560eb90a793e09b62b9f85c17cbd739812fd107cf" => :mountain_lion
+  end
+
+  conflicts_with "bash-completion"
 
   # All three fix issues with GNU extended regexs
   patch do
-    url "http://anonscm.debian.org/gitweb/?p=bash-completion/bash-completion.git;a=patch;h=f230cfddbd12b8c777040e33bac1174c0e2898af"
-    sha1 "0805407d8221281eed569e102fd8f81292b54e31"
+    url "https://anonscm.debian.org/gitweb/?p=bash-completion/bash-completion.git;a=patch;h=f230cfddbd12b8c777040e33bac1174c0e2898af"
+    sha256 "b557b2f71a1376b51bf2de1c56f181b27111381cb3cac727144d65d94ab1758a"
   end
 
   patch do
-    url "http://anonscm.debian.org/gitweb/?p=bash-completion/bash-completion.git;a=patch;h=3ac523f57e8d26e0943dfb2fd22f4a8879741c60"
-    sha1 "9fd6805b60b1ee5093e8b8cac2191df640905aa6"
+    url "https://anonscm.debian.org/gitweb/?p=bash-completion/bash-completion.git;a=patch;h=3ac523f57e8d26e0943dfb2fd22f4a8879741c60"
+    sha256 "b680b347d8f1330cbae47b76ec6d9e9ec15459a7c89c2c767855e47afbebed96"
   end
 
   patch do
-    url "http://anonscm.debian.org/gitweb/?p=bash-completion/bash-completion.git;a=patch;h=50ae57927365a16c830899cc1714be73237bdcb2"
-    sha1 "e14ac827a59f48eb05e7da60b6fce996be1a34f4"
+    url "https://anonscm.debian.org/gitweb/?p=bash-completion/bash-completion.git;a=patch;h=50ae57927365a16c830899cc1714be73237bdcb2"
+    sha256 "7a5dda29cb0c0ba4fc747fd2163c8041efe4b157b71708b4e9db5a0048588e6b"
   end
 
   # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=739835
   # resolves issue with completion of files/directories with spaces in the name.
   patch do
-    url "http://anonscm.debian.org/cgit/bash-completion/debian.git/plain/debian/patches/00-fix_quote_readline_by_ref.patch?id=d734ca3bd73ae49b8f452802fb8fb65a440ab07a"
-    sha1 "5dc4f7428d968807fc6cce0fe70ba07ca187150b"
+    url "https://anonscm.debian.org/cgit/bash-completion/debian.git/plain/debian/patches/00-fix_quote_readline_by_ref.patch?id=d734ca3bd73ae49b8f452802fb8fb65a440ab07a"
+    sha256 "7304f8fb4ad869f1b3d6f3456b2750246ddedef6fc307939bf403bf528f2fdf1"
   end
 
   # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=739835
@@ -36,18 +42,18 @@ class BashCompletion2 < Formula
   patch :DATA
 
   def compdir
-    HOMEBREW_PREFIX/'share/bash-completion/completions'
+    HOMEBREW_PREFIX/"share/bash-completion/completions"
   end
 
   def install
-    inreplace 'bash_completion', 'readlink -f', 'readlink'
+    inreplace "bash_completion", "readlink -f", "readlink"
 
     system "./configure", "--prefix=#{prefix}", "--sysconfdir=#{etc}"
     ENV.deparallelize
-    system "make install"
+    system "make", "install"
 
-    unless (compdir/'brew').exist?
-      compdir.install_symlink HOMEBREW_CONTRIB/'brew_bash_completion.sh' => 'brew'
+    unless (compdir/"brew").exist?
+      compdir.install_symlink HOMEBREW_CONTRIB/"brew_bash_completion.sh" => "brew"
     end
   end
 

@@ -48,10 +48,10 @@ class Llvm36 < Formula
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 1
-    sha256 "901fca1bbb4060dfdc83c949c19a01edba2fadd82512c6ab3e52d569e7a3403c" => :yosemite
-    sha256 "c85741f2c7e5b3d6b914470e6c2242d71ddc0cb715342b96f158697511295d55" => :mavericks
-    sha256 "3f99aa3ecca506a61d413f8723139b19427e7a0bfc479dd086e5e806dc1d3a1b" => :mountain_lion
+    revision 2
+    sha256 "7f43f41440ea8353a80bd0a3b0db1983d4f67e2eba7e082d50619225fee6fe54" => :yosemite
+    sha256 "7cb21aa6e888579b429c649a4c4f554c20fe0c52250c2c147a060142b5a8f8be" => :mavericks
+    sha256 "198d29b41465177a31cf4daffd8b37a3c94adf9bf7c8074f325ed8d9075c0d61" => :mountain_lion
   end
 
   head do
@@ -91,8 +91,8 @@ class Llvm36 < Formula
   end
 
   resource "isl" do
-    url "http://repo.or.cz/w/isl.git/snapshot/0698f8436c523ecc742b13a9b3aa337cc2421fa2.tar.gz"
-    sha256 "d2b041d895f296936ef4cf3811b63fd6e3e5271ea97bb4b7406a743944a8a836"
+    url "http://isl.gforge.inria.fr/isl-0.14.1.tar.gz"
+    sha256 "bd15d06d050a92a6720fc7e2a58022a3fd1a73c4996cc358ba50864fd5e86c35"
   end
 
   patch :DATA
@@ -107,8 +107,6 @@ class Llvm36 < Formula
   option "without-assertions", "Speeds up LLVM, but provides less debug information"
 
   # required to build isl
-  depends_on "autoconf" => :build
-  depends_on "automake" => :build
   depends_on "libtool"  => :build
   depends_on "pkg-config" => :build
 
@@ -160,7 +158,6 @@ class Llvm36 < Formula
     isl_prefix = install_prefix/"libexec/isl"
 
     resource("isl").stage do
-      system "./autogen.sh"
       system "./configure", "--disable-dependency-tracking",
                             "--disable-silent-rules",
                             "--prefix=#{isl_prefix}",

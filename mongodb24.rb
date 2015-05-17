@@ -1,17 +1,23 @@
-require 'formula'
-
 class Mongodb24 < Formula
-  homepage 'http://www.mongodb.org/'
-  url 'http://downloads.mongodb.org/src/mongodb-src-r2.4.12.tar.gz'
-  sha1 '7b78d201fdc25c791c30fe7ec8cadecb405c7bb7'
+  homepage "https://www.mongodb.org/"
+  url "https://fastdl.mongodb.org/src/mongodb-src-r2.4.12.tar.gz"
+  sha256 "b239a065a1197f811a3908bdee8d535564b94f2d79da893935e38831ebbac8b3"
 
-  patch do
-    url 'https://github.com/mongodb/mongo/commit/be4bc7.diff'
-    sha1 '7bbf8f9e48fb55dd418e4a5e9070bf0d19d83ab0'
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    cellar :any
+    sha256 "004b4e3bfdb5ee0c00b5568383b5012059d057cc30248f5604afd34fd3cb8382" => :yosemite
+    sha256 "c6310fd5ea6f665c1d6aec573024b729c912865fcad25ce6723a293bcde82db7" => :mavericks
+    sha256 "d3d6d653817a8e6127d9efa62d0f7338c67d15217acb323b5ad49ae853a719da" => :mountain_lion
   end
 
-  depends_on 'scons' => :build
-  depends_on 'openssl' => :optional
+  patch do
+    url "https://github.com/mongodb/mongo/commit/be4bc7.diff"
+    sha256 "63592bb33dbe1662425a4a323a6ad33a6aa25d8e3c28b2bc48e34df57361eeed"
+  end
+
+  depends_on "scons" => :build
+  depends_on "openssl" => :optional
 
   # When 2.6 is released this conditional can be removed.
   if MacOS.version < :mavericks
@@ -31,7 +37,7 @@ class Mongodb24 < Formula
       cxx += " -stdlib=libstdc++"
     end
 
-    args << '--64' if MacOS.prefer_64_bit?
+    args << "--64" if MacOS.prefer_64_bit?
     args << "--cc=#{ENV.cc}"
     args << "--cxx=#{cxx}"
 
@@ -39,18 +45,18 @@ class Mongodb24 < Formula
     args << "--full"
     args << "--use-system-boost" if build.with? "boost"
 
-    if build.with? 'openssl'
-      args << '--ssl'
+    if build.with? "openssl"
+      args << "--ssl"
       args << "--extrapath=#{Formula["openssl"].opt_prefix}"
     end
 
-    scons 'install', *args
+    scons "install", *args
 
     (buildpath+"mongod.conf").write mongodb_conf
     etc.install "mongod.conf"
 
-    (var+'mongodb').mkpath
-    (var+'log/mongodb').mkpath
+    (var+"mongodb").mkpath
+    (var+"log/mongodb").mkpath
   end
 
   def mongodb_conf; <<-EOS.undent
@@ -107,6 +113,6 @@ class Mongodb24 < Formula
   end
 
   test do
-    system "#{bin}/mongod", '--sysinfo'
+    system "#{bin}/mongod", "--sysinfo"
   end
 end

@@ -1,34 +1,33 @@
-require 'formula'
-
-class Qt5HeadDownloadStrategy < GitDownloadStrategy
-  include FileUtils
-
-  def stage
-    @clone.cd { reset }
-    safe_system 'git', 'clone', @clone, '.'
-    ln_s @clone, 'qt'
-    safe_system './init-repository', '--mirror', "#{Dir.pwd}/"
-    rm 'qt'
-  end
-end
-
 class Qt52 < Formula
-  homepage 'http://qt-project.org/'
-  url 'http://download.qt-project.org/official_releases/qt/5.2/5.2.1/single/qt-everywhere-opensource-src-5.2.1.tar.gz'
-  sha1 '31a5cf175bb94dbde3b52780d3be802cbeb19d65'
+  homepage "https://www.qt.io/"
+  url "https://download.qt.io/official_releases/qt/5.2/5.2.1/single/qt-everywhere-opensource-src-5.2.1.tar.gz"
+  sha256 "84e924181d4ad6db00239d87250cc89868484a14841f77fb85ab1f1dbdcd7da1"
+
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "5704fa2d665f5185ea25012ef2dbece9ab64507a72226d1f6d5e84f0c18ba2ae" => :yosemite
+    sha256 "fcaad4e34400587f5836e3ac6e7d643d8d430a738f23879de5e530ac4c77eecb" => :mavericks
+    sha256 "e0e2e057186950d7163c40d358c9fba035eac766f3d0c0ec07a87821e3608fde" => :mountain_lion
+  end
 
   keg_only "Qt 5 conflicts Qt 4 (which is currently much more widely used)."
 
   option :universal
-  option 'with-docs', 'Build documentation'
-  option 'developer', 'Build and link with developer options'
+  option "with-docs", "Build documentation"
+  option "with-developer", "Build and link with developer options"
+
+  deprecated_option "developer" => "with-developer"
 
   depends_on "pkg-config" => :build
+  depends_on :xcode => :build
   depends_on "d-bus" => :optional
   depends_on "mysql" => :optional
 
+  # Fails to build miserably on Xcodes which contain the 10.10 SDK
+  patch :DATA if MacOS.version >= :mavericks
+
   def install
-    # fixed hardcoded link to plugin dir: https://bugreports.qt-project.org/browse/QTBUG-29188
+    # fixed hardcoded link to plugin dir: https://bugreports.qt.io/browse/QTBUG-29188
     inreplace "qttools/src/macdeployqt/macdeployqt/main.cpp", "deploymentInfo.pluginPath = \"/Developer/Applications/Qt/plugins\";",
               "deploymentInfo.pluginPath = \"#{prefix}/plugins\";"
 
@@ -41,12 +40,12 @@ class Qt52 < Formula
             "-nomake", "tests",
             "-release"]
 
-    # https://bugreports.qt-project.org/browse/QTBUG-34382
+    # https://bugreports.qt.io/browse/QTBUG-34382
     args << "-no-xcb"
 
-    args << "-plugin-sql-mysql" if build.with? 'mysql'
+    args << "-plugin-sql-mysql" if build.with? "mysql"
 
-    if build.with? 'd-bus'
+    if build.with? "d-bus"
       dbus_opt = Formula["d-bus"].opt_prefix
       args << "-I#{dbus_opt}/lib/dbus-1.0/include"
       args << "-I#{dbus_opt}/include/dbus-1.0"
@@ -55,21 +54,22 @@ class Qt52 < Formula
       args << "-dbus-linked"
     end
 
-    if MacOS.prefer_64_bit? or build.universal?
-      args << '-arch' << 'x86_64'
+    if MacOS.prefer_64_bit? || build.universal?
+      args << "-arch" << "x86_64"
     end
 
-    if !MacOS.prefer_64_bit? or build.universal?
-      args << '-arch' << 'x86'
+    if !MacOS.prefer_64_bit? || build.universal?
+      args << "-arch" << "x86"
     end
 
-    args << '-developer-build' if build.include? 'developer'
+    args << "-developer-build" if build.with? "developer"
 
     system "./configure", *args
     system "make"
     ENV.j1
-    system "make install"
-    if build.with? 'docs'
+    system "make", "install"
+
+    if build.with? "docs"
       system "make", "docs"
       system "make", "install_docs"
     end
@@ -102,3 +102,46 @@ class Qt52 < Formula
     EOS
   end
 end
+
+__END__
+diff --git a/qtmultimedia/src/plugins/avfoundation/mediaplayer/avfmediaplayersession.mm b/qtmultimedia/src/plugins/avfoundation/mediaplayer/avfmediaplayersession.mm
+index a73974c..d3f3eae 100644
+--- a/qtmultimedia/src/plugins/avfoundation/mediaplayer/avfmediaplayersession.mm
++++ b/qtmultimedia/src/plugins/avfoundation/mediaplayer/avfmediaplayersession.mm
+@@ -322,7 +322,7 @@ static void *AVFMediaPlayerSessionObserverCurrentItemObservationContext = &AVFMe
+     //AVPlayerItem "status" property value observer.
+     if (context == AVFMediaPlayerSessionObserverStatusObservationContext)
+     {
+-        AVPlayerStatus status = [[change objectForKey:NSKeyValueChangeNewKey] integerValue];
++        AVPlayerStatus status = (AVPlayerStatus)[[change objectForKey:NSKeyValueChangeNewKey] integerValue];
+         switch (status)
+         {
+             //Indicates that the status of the player is not yet known because
+diff --git a/qtbase/src/plugins/platforms/cocoa/qcocoaapplicationdelegate.mm b/qtbase/src/plugins/platforms/cocoa/qcocoaapplicationdelegate.mm
+index f841184..548c6a2 100644
+--- a/qtbase/src/plugins/platforms/cocoa/qcocoaapplicationdelegate.mm
++++ b/qtbase/src/plugins/platforms/cocoa/qcocoaapplicationdelegate.mm
+@@ -124,7 +124,7 @@ static void cleanupCocoaApplicationDelegate()
+     [dockMenu release];
+     [qtMenuLoader release];
+     if (reflectionDelegate) {
+-        [NSApp setDelegate:reflectionDelegate];
++        [[NSApplication sharedApplication] setDelegate:reflectionDelegate];
+         [reflectionDelegate release];
+     }
+     [[NSNotificationCenter defaultCenter] removeObserver:self];
+diff --git a/qtbase/src/plugins/platforms/cocoa/qcocoamenuloader.mm b/qtbase/src/plugins/platforms/cocoa/qcocoamenuloader.mm
+index 60bc3b5..9340e94 100644
+--- a/qtbase/src/plugins/platforms/cocoa/qcocoamenuloader.mm
++++ b/qtbase/src/plugins/platforms/cocoa/qcocoamenuloader.mm
+@@ -174,7 +174,7 @@ QT_END_NAMESPACE
+ - (void)removeActionsFromAppMenu
+ {
+     for (NSMenuItem *item in [appMenu itemArray])
+-        [item setTag:nil];
++        [item setTag:0];
+ }
+
+ - (void)dealloc
+--
+1.7.1
