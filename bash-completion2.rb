@@ -51,10 +51,10 @@ class BashCompletion2 < Formula
     system "./configure", "--prefix=#{prefix}", "--sysconfdir=#{etc}"
     ENV.deparallelize
     system "make", "install"
+  end
 
-    unless (compdir/"brew").exist?
-      compdir.install_symlink HOMEBREW_CONTRIB/"brew_bash_completion.sh" => "brew"
-    end
+  def post_install
+    compdir.install_symlink HOMEBREW_CONTRIB/"brew_bash_completion.sh" => "brew"
   end
 
   def caveats; <<-EOS.undent

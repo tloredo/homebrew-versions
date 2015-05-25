@@ -1,11 +1,15 @@
-require 'formula'
-
 class Ruby186 < Formula
-  homepage 'http://www.ruby-lang.org/en/'
-  url 'http://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p420.tar.bz2'
-  mirror 'http://mirrorservice.org/sites/ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p420.tar.bz2'
-  sha256 '5ed3e6b9ebcb51baf59b8263788ec9ec8a65fbb82286d952dd3eb66e22d9a09f'
+  homepage "https://www.ruby-lang.org/"
+  url "http://cache.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p420.tar.bz2"
+  sha256 "5ed3e6b9ebcb51baf59b8263788ec9ec8a65fbb82286d952dd3eb66e22d9a09f"
   revision 1
+
+  bottle do
+    root_url "https://homebrew.bintray.com/bottles-versions"
+    sha256 "e1c95c51e9e6bded398ddbdf005eb11546a030281bcadf2d921bd816dea96c55" => :yosemite
+    sha256 "ca1bff8acfd1da8f093c2f4bdd0ebe7655ce485c6bffd0b069417497b2f739ae" => :mavericks
+    sha256 "29cb67a3e824144a4e16304c4d84eed4ea4032b0ee24a130ff28a259556f2e81" => :mountain_lion
+  end
 
   # Otherwise it fails when building bigdecimal by trying to load
   # files from the system ruby instead of the one it's building
@@ -14,16 +18,16 @@ class Ruby186 < Formula
   keg_only :provided_by_osx
 
   option :universal
-  option 'with-suffix', 'Suffix commands with "186"'
-  option 'with-doc', 'Install documentation'
-  option 'with-tcltk', 'Install with Tcl/Tk support'
+  option "with-suffix", "Suffix commands with '186'"
+  option "with-doc", "Install documentation"
+  option "with-tcltk", "Install with Tcl/Tk support"
 
-  depends_on 'pkg-config' => :build
-  depends_on 'readline' => :recommended
-  depends_on 'gdbm' => :optional
-  depends_on 'libyaml'
-  depends_on 'openssl' if MacOS.version >= :mountain_lion
-  depends_on :x11 if build.with? 'tcltk'
+  depends_on "pkg-config" => :build
+  depends_on "readline" => :recommended
+  depends_on "gdbm" => :optional
+  depends_on "libyaml"
+  depends_on "openssl" if MacOS.version >= :mountain_lion
+  depends_on :x11 if build.with? "tcltk"
 
   fails_with :llvm do
     build 2326
@@ -35,6 +39,8 @@ class Ruby186 < Formula
   patch :DATA
 
   def install
+    ENV.deparallelize
+
     args = %W[--prefix=#{prefix} --enable-shared]
 
     if build.universal?
@@ -47,27 +53,19 @@ class Ruby186 < Formula
     args << "--disable-install-doc" if build.without? "doc"
     args << "--disable-dtrace" unless MacOS::CLT.installed?
 
-    # OpenSSL is deprecated on OS X 10.8 and Ruby can't find the outdated
-    # version (0.9.8r 8 Feb 2011) that ships with the system.
-    # See discussion https://github.com/sstephenson/ruby-build/issues/304
-    # and https://github.com/mxcl/homebrew/pull/18054
-    if MacOS.version >= :mountain_lion
-      args << "--with-openssl-dir=#{Formula["openssl"].opt_prefix}"
-    end
-
     # Put gem, site and vendor folders in the HOMEBREW_PREFIX
     ruby_lib = HOMEBREW_PREFIX/"lib/ruby"
-    (ruby_lib/'site_ruby').mkpath
-    (ruby_lib/'vendor_ruby').mkpath
-    (ruby_lib/'gems').mkpath
+    (ruby_lib/"site_ruby").mkpath
+    (ruby_lib/"vendor_ruby").mkpath
+    (ruby_lib/"gems").mkpath
 
-    (lib/'ruby').install_symlink ruby_lib/'site_ruby',
-                                 ruby_lib/'vendor_ruby',
-                                 ruby_lib/'gems'
+    (lib/"ruby").install_symlink ruby_lib/"site_ruby",
+                                 ruby_lib/"vendor_ruby",
+                                 ruby_lib/"gems"
 
     system "./configure", *args
     system "make"
-    system "make install"
+    system "make", "install"
   end
 
   def caveats; <<-EOS.undent
@@ -76,6 +74,12 @@ class Ruby186 < Formula
 
     You may want to add this to your PATH.
     EOS
+  end
+
+  test do
+    output = `#{bin}/ruby -e "puts 'hello'"`
+    assert_equal "hello\n", output
+    assert_equal 0, $?.exitstatus
   end
 end
 

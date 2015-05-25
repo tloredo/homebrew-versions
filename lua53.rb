@@ -6,10 +6,10 @@ class Lua53 < Formula
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 2
-    sha256 "367718f0c325ae2802af9a6486674337af61489d8d7409c3bed6a76e4faa2d75" => :yosemite
-    sha256 "e77d5dd14b92886a18d1255e268cdd1ffa9faf43f0f7f452db28cd6cba45760b" => :mavericks
-    sha256 "99325ae62913906b17420fff7c92fcea598c707a5f88c04aaf74ee6de0bf2949" => :mountain_lion
+    revision 3
+    sha256 "f99bbfa925d4f71334423c326b1afef93f184f4018049cd4d8f8251c8d8798d1" => :yosemite
+    sha256 "723ec1e999c70fab9be762f0ebf15009f7841a40850c4e611ea6481383624ea0" => :mavericks
+    sha256 "67ff4fa02c519014a43fcdd23b334bd840e1e2721cb0306c7c1e2e16af15f0b4" => :mountain_lion
   end
 
   fails_with :llvm do
@@ -26,8 +26,8 @@ class Lua53 < Formula
   patch :DATA
 
   resource "luarocks" do
-    url "https://github.com/keplerproject/luarocks/archive/v2.2.1.tar.gz"
-    sha256 "30e5bd99f82f5e3ea174572c1831f9ff83dfe37727f9fcfc89168b4572193571"
+    url "https://keplerproject.github.io/luarocks/releases/luarocks-2.2.2.tar.gz"
+    sha256 "4f0427706873f30d898aeb1dfb6001b8a3478e46a5249d015c061fe675a1f022"
   end
 
   def install

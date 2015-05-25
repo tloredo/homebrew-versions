@@ -1,15 +1,15 @@
 class LibmongoclientLegacy < Formula
   homepage "https://www.mongodb.org"
-  url "https://github.com/mongodb/mongo-cxx-driver/archive/legacy-1.0.1.tar.gz"
-  sha256 "29ffbf3674192e1cb47af7ad620b9b0c1e60716033c6c342a3f935f3ce79c59e"
+  url "https://github.com/mongodb/mongo-cxx-driver/archive/legacy-1.0.2.tar.gz"
+  sha256 "b4cf6354a5bf9f7a2c440094496c7ad4c0646d751c89daa3e4f90f39df58cda4"
 
   head "https://github.com/mongodb/mongo-cxx-driver.git", :branch => "legacy"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha256 "b6224d2274abc491d9d7a2e300e2c537baa46c18e8c5b2223a6fb80ada7bcc3e" => :yosemite
-    sha256 "0ffb747ad72a01f2e99bb6c305e4394a87fe64800c8287fca1ee36de13ec6ab7" => :mavericks
-    sha256 "45832154ceff0acbbd3b31834fe7734d87b937815ae478534d9049e19668c931" => :mountain_lion
+    sha256 "347dacd430b05815ea1270eb6355f54134e5171b15c140da475235f045060c13" => :yosemite
+    sha256 "06d04228c6bd53c7a2634228d4c8b3b19a4d765a9a10c20554b6bb1b019fe4d4" => :mavericks
+    sha256 "3a73c4e2a01e30f064c600f6bfcf723e47516cb2dba2debe566dbe4c56bab730" => :mountain_lion
   end
 
   conflicts_with "libmongoclient", :because => "libmongoclient contains 26compat branch"
