@@ -1,4 +1,5 @@
 class Node08 < Formula
+  desc "Platform built on V8 to build network applications"
   homepage "https://nodejs.org/"
   url "https://nodejs.org/dist/v0.8.26/node-v0.8.26.tar.gz"
   sha256 "d873216685774b96139af534ce015077d2c93ddfc4e3596e128853f3c08a5413"
@@ -6,10 +7,9 @@ class Node08 < Formula
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 1
-    sha256 "3185286b196a5f105d7db714b52b710e9da274ffaf66525841a950d1be82d2b6" => :yosemite
-    sha256 "f48b1c0bab13cb6df95193b68fe1d3ded6b1324e7518d637d8548b482bd989ca" => :mavericks
-    sha256 "4861bd949ae6e4dca014fdf7931accd36b8557de61f1f49fc72fb5b4ceb0ba82" => :mountain_lion
+    sha256 "1bbcb462caf95897b03e119fb21622326085b0467fbf99ab9079d5f2cf116732" => :yosemite
+    sha256 "aac4d07c192b0e8e2beb41c2b59a9fb80ef3fcac31560585803919582c94faeb" => :mavericks
+    sha256 "f02b3347b5380f3938e6dc1f7ab0f2fe75eac5cfb0234cbc08e0fad22e6273ce" => :mountain_lion
   end
 
   option "with-debug", "Build with debugger hooks"
@@ -28,8 +28,8 @@ class Node08 < Formula
   end
 
   resource "npm" do
-    url "https://registry.npmjs.org/npm/-/npm-2.8.3.tgz"
-    sha256 "81089fbb9f71286d2fd41423fbb171a92a126709d6a4b5d7c5ae02475a393838"
+    url "https://registry.npmjs.org/npm/-/npm-2.11.0.tgz"
+    sha256 "c35f1b89705d63e76c8548647b0fa016e0bedee899a51ba93895db1d5eda940b"
   end
 
   # Fixes double-free issue. See https://github.com/joyent/node/issues/6427

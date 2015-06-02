@@ -1,5 +1,6 @@
 # Note that x.even are stable releases, x.odd are devel releases
 class Node010 < Formula
+  desc "Platform built on V8 to build network applications"
   homepage "https://nodejs.org/"
   url "https://nodejs.org/dist/v0.10.38/node-v0.10.38.tar.gz"
   sha256 "513da8ed5e48abefdfab664f1cabc160238d314a0481148804aff8fc6552b78b"
@@ -7,10 +8,9 @@ class Node010 < Formula
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 1
-    sha256 "bf33848a50625b12d3ea2b1f29e63ac27aabad270b04bbbcbe3c86d43a05a28a" => :yosemite
-    sha256 "268ababd81a5a5d9e3525c5c3b15dcb4c6c6d18db40c5071aa3064242741b238" => :mavericks
-    sha256 "97862fbc7d76c3313a3bdc16d31d39b21a508e5404c1c49fcd943a8ccf286a05" => :mountain_lion
+    sha256 "387704ec2651265b0d4bec275088c5de23bc68b54cf349f66547a7c2cb07700c" => :yosemite
+    sha256 "68faff9a680c58ff74b164e07c7f8881da8a18cab8dcace6faa866d22b11e057" => :mavericks
+    sha256 "134a8943abf80ff7549595a47444c82155fe8af3f6c97177332f06b68bf90250" => :mountain_lion
   end
 
   deprecated_option "enable-debug" => "with-debug"
@@ -27,8 +27,8 @@ class Node010 < Formula
   end
 
   resource "npm" do
-    url "https://registry.npmjs.org/npm/-/npm-2.8.3.tgz"
-    sha256 "81089fbb9f71286d2fd41423fbb171a92a126709d6a4b5d7c5ae02475a393838"
+    url "https://registry.npmjs.org/npm/-/npm-2.11.0.tgz"
+    sha256 "c35f1b89705d63e76c8548647b0fa016e0bedee899a51ba93895db1d5eda940b"
   end
 
   conflicts_with "node",

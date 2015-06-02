@@ -1,57 +1,57 @@
 class Llvm36 < Formula
+  desc "A modular and reusable compiler system"
   homepage "http://llvm.org/"
 
   stable do
-    url "http://llvm.org/releases/3.6.0/llvm-3.6.0.src.tar.xz"
-    sha256 "b39a69e501b49e8f73ff75c9ad72313681ee58d6f430bfad4d81846fe92eb9ce"
+    url "http://llvm.org/releases/3.6.1/llvm-3.6.1.src.tar.xz"
+    sha256 "2f00c615913aa0b56607ee1548936e60ad2aa89e6d56f23fb032a4463366fc7a"
 
     resource "clang" do
-      url "http://llvm.org/releases/3.6.0/cfe-3.6.0.src.tar.xz"
-      sha256 "be0e69378119fe26f0f2f74cffe82b7c26da840c9733fe522ed3c1b66b11082d"
+      url "http://llvm.org/releases/3.6.1/cfe-3.6.1.src.tar.xz"
+      sha256 "74f92d0c93b86678b015e87655f59474b2f657769680efdeb3c0524ffbd2dad7"
     end
 
     resource "clang-tools-extra" do
-      url "http://llvm.org/releases/3.6.0/clang-tools-extra-3.6.0.src.tar.xz"
-      sha256 "3aa949ba82913490a75697287d9ee8598c619fae0aa6bb8fddf0095ff51bc812"
+      url "http://llvm.org/releases/3.6.1/clang-tools-extra-3.6.1.src.tar.xz"
+      sha256 "f4ee70d870d550a9147ac6a548ce7daf7d9e6897348bf411f43c572966fb92b6"
     end
 
     resource "compiler-rt" do
-      url "http://llvm.org/releases/3.6.0/compiler-rt-3.6.0.src.tar.xz"
-      sha256 "7f49fb79e5adcdce7dddaf973f1db130228dfb19e37a99a7f5365a6948b26b11"
+      url "http://llvm.org/releases/3.6.1/compiler-rt-3.6.1.src.tar.xz"
+      sha256 "fcbf610c77be6047f11ca10c4725610417beba832565115a9e2fcfe2897b649f"
     end
 
     resource "polly" do
-      url "http://llvm.org/releases/3.6.0/polly-3.6.0.src.tar.xz"
-      sha256 "b6926fb0a63a497ecf8a229cd8630fe1c981e020728454d343a8f0d8a60c92f3"
+      url "http://llvm.org/releases/3.6.1/polly-3.6.1.src.tar.xz"
+      sha256 "d085f97bcbb4e47b51ed60ba9a55b3fee394193e7e48ab5c5b0035e6fc80a7eb"
     end
 
     resource "lld" do
-      url "http://llvm.org/releases/3.6.0/lld-3.6.0.src.tar.xz"
-      sha256 "fb6f787188485b1fac17b73eed9db1dbc0481d6d1fbc273ea1fcd51fdb49a230"
+      url "http://llvm.org/releases/3.6.1/lld-3.6.1.src.tar.xz"
+      sha256 "3aee0513caeac6dd55930838425f63ad79bee9ccdf081cafbd853bbd65486feb"
     end
 
     resource "lldb" do
-      url "http://llvm.org/releases/3.6.0/lldb-3.6.0.src.tar.xz"
-      sha256 "2b1ad1d42c4ea3fa2f9dd6db7c522d86e80891659b24dbb3d0d80386d8eaf0b2"
+      url "http://llvm.org/releases/3.6.1/lldb-3.6.1.src.tar.xz"
+      sha256 "cefb5c64e78e85ad05a06b80f017ccfe1208b74d3da34eb425c505c6fef9aaba"
     end
 
     resource "libcxx" do
-      url "http://llvm.org/releases/3.6.0/libcxx-3.6.0.src.tar.xz"
-      sha256 "299c1e82b0086a79c5c1aa1885ea3be3bbce6979aaa9b886409b14f9b387fbb7"
+      url "http://llvm.org/releases/3.6.1/libcxx-3.6.1.src.tar.xz"
+      sha256 "5a5c653becf3978d4c4f6095708660855bed691210a9426bb839eecd88b6c0f9"
     end
 
     resource "libcxxabi" do
-      url "http://llvm.org/releases/3.6.0/libcxxabi-3.6.0.src.tar.xz"
-      sha256 "f78bcfdb8015272f28d70f5546a544b5bdae5d92862711e8ecb9b24387d994f5"
+      url "http://llvm.org/releases/3.6.1/libcxxabi-3.6.1.src.tar.xz"
+      sha256 "bc8387f420dad9b7e66b708e0a8bf9de9d902c1848fcf6b77244eeb282aff15d"
     end if MacOS.version <= :snow_leopard
   end
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 2
-    sha256 "7f43f41440ea8353a80bd0a3b0db1983d4f67e2eba7e082d50619225fee6fe54" => :yosemite
-    sha256 "7cb21aa6e888579b429c649a4c4f554c20fe0c52250c2c147a060142b5a8f8be" => :mavericks
-    sha256 "198d29b41465177a31cf4daffd8b37a3c94adf9bf7c8074f325ed8d9075c0d61" => :mountain_lion
+    sha256 "efb032765af76776cb18312760c85ff27adc82cdf5fb3f3e2b897476ac1e95d2" => :yosemite
+    sha256 "f07c9b5d6fbb30d2c3d3b5d294b6120969e161c5f66e7c612d5fbc77ddb26e60" => :mavericks
+    sha256 "3e8da7b8853c6223097e6096a26e10d25ee2ee1c6f3929eac9c376aae825c01a" => :mountain_lion
   end
 
   head do

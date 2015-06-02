@@ -24,7 +24,7 @@ class Gnupg21 < Formula
   depends_on "pkg-config" => :build
   depends_on "npth"
   depends_on "gnutls"
-  depends_on "encfs" => :optional
+  depends_on "homebrew/fuse/encfs" => :optional
   depends_on "libgpg-error"
   depends_on "libgcrypt"
   depends_on "libksba"

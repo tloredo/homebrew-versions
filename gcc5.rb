@@ -19,12 +19,11 @@ class Gcc5 < Formula
     `uname -r`.chomp
   end
 
+  desc "The GNU Compiler Collection"
   homepage "https://gcc.gnu.org"
   url "http://ftpmirror.gnu.org/gcc/gcc-5.1.0/gcc-5.1.0.tar.bz2"
   mirror "https://ftp.gnu.org/gnu/gcc/gcc-5.1.0/gcc-5.1.0.tar.bz2"
   sha256 "b7dafdf89cbb0e20333dbf5b5349319ae06e3d1a30bf3515b5488f7e89dca5ad"
-
-  head "svn://gcc.gnu.org/svn/gcc/trunk"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
@@ -83,7 +82,7 @@ class Gcc5 < Formula
       # Everything but Ada, which requires a pre-existing GCC Ada compiler
       # (gnat) to bootstrap. GCC 4.6.0 add go as a language option, but it is
       # currently only compilable on Linux.
-      languages = %w[c c++ fortran java objc obj-c++]
+      languages = %w[c c++ fortran java objc obj-c++ jit]
     else
       # C, C++, ObjC compilers are always built
       languages = %w[c c++ objc obj-c++]
@@ -138,16 +137,11 @@ class Gcc5 < Formula
       args << "--enable-multilib"
     end
 
-    args << "--enable-host-shared" if build.with? "jit"
+    args << "--enable-host-shared" if build.with?("jit") || build.with?("all-languages")
 
     # Ensure correct install names when linking against libgcc_s;
     # see discussion in https://github.com/Homebrew/homebrew/pull/34303
     inreplace "libgcc/config/t-slibgcc-darwin", "@shlib_slibdir@", "#{HOMEBREW_PREFIX}/lib/gcc/#{version_suffix}"
-
-    # Refresh before make --HEAD
-    if build.head?
-      system "./contrib/gcc_update", "--touch"
-    end
 
     mkdir "build" do
       unless MacOS::CLT.installed?
