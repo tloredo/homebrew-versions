@@ -1,15 +1,13 @@
 class Postgresql91 < Formula
   homepage "http://www.postgresql.org/"
-  url "http://ftp.postgresql.org/pub/source/v9.1.13/postgresql-9.1.13.tar.bz2"
-  sha256 "20f8aa5dfcb47688ca6b6c41340cac61712d9cf87c34d58b0a75bb2f85d89b7f"
-  revision 1
+  url "http://ftp.postgresql.org/pub/source/v9.1.17/postgresql-9.1.17.tar.bz2"
+  sha256 "ddddd0a250c4b415d2edbf90671808276f29d81ee01971806f8ec5f2beae16aa"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 1
-    sha1 "3ed2bef957fd33aee30e2b13ad619896d88cd9cd" => :yosemite
-    sha1 "a83dd2327c6224eddba96a8c19a6bdda7cee60de" => :mavericks
-    sha1 "11ae73d1ea600b00d3b0a522e200cbb42686c369" => :mountain_lion
+    sha256 "b9ef6411bee08d430d97d58f7b9f5664ec5e954ae53798ca21c261d0bfaddb5f" => :yosemite
+    sha256 "a1b6a837d8cbbb45902e39ca8a74c3fa495ab35c834267ec3ed0f8af6eae2cf4" => :mavericks
+    sha256 "9211ed0a8f7f998dcedb580fcd204279b1045836cf34518ecf69470dd1ad3f92" => :mountain_lion
   end
 
   depends_on "openssl"
@@ -28,7 +26,6 @@ class Postgresql91 < Formula
   deprecated_option "no-tcl" => "without-tcl"
   deprecated_option "enable-dtrace" => "with-dtrace"
 
-  # Fix PL/Python build: https://github.com/mxcl/homebrew/issues/11162
   # Fix uuid-ossp build issues: http://archives.postgresql.org/pgsql-general/2012-07/msg00654.php
   patch :DATA
 
@@ -193,23 +190,12 @@ class Postgresql91 < Formula
   end
 
   test do
-    system "#{bin}/initdb", testpath
+    system "#{bin}/initdb", testpath/"test"
   end
 end
 
 
 __END__
---- a/src/pl/plpython/Makefile	2011-09-23 08:03:52.000000000 +1000
-+++ b/src/pl/plpython/Makefile	2011-10-26 21:43:40.000000000 +1100
-@@ -24,8 +24,6 @@
- # Darwin (OS X) has its own ideas about how to do this.
- ifeq ($(PORTNAME), darwin)
- shared_libpython = yes
--override python_libspec = -framework Python
--override python_additional_libs =
- endif
-
- # If we don't have a shared library and the platform doesn't allow it
 --- a/contrib/uuid-ossp/uuid-ossp.c	2012-07-30 18:34:53.000000000 -0700
 +++ b/contrib/uuid-ossp/uuid-ossp.c	2012-07-30 18:35:03.000000000 -0700
 @@ -9,6 +9,8 @@

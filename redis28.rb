@@ -1,15 +1,14 @@
 class Redis28 < Formula
   homepage "http://redis.io/"
-  url "http://download.redis.io/releases/redis-2.8.19.tar.gz"
-  sha256 "29bb08abfc3d392b2f0c3e7f48ec46dd09ab1023f9a5575fc2a93546f4ca5145"
+  url "http://download.redis.io/releases/redis-2.8.21.tar.gz"
+  sha256 "3da371693bb54c22da04d86cab1b871072c8d19bdfbc4f811469b7b53384c563"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
     cellar :any
-    revision 1
-    sha256 "a90c9ca0f3fda1a9e5af1fd629baff997e65017249dbdcf638bbc7dba0a1dda0" => :yosemite
-    sha256 "4dbf3bfba912367c8a19709949059c3e3e8f3a128adbc0e2564bdb9bbd61a2f1" => :mavericks
-    sha256 "df55c0092bf5f29f0e7395b4e4cb4090ddebcae2c1beb40fca26b9a7a80c34a2" => :mountain_lion
+    sha256 "a116b30423226cd4445de190acd97c955962d7ae589ccac0aaf9b9585fb5dfca" => :yosemite
+    sha256 "a0b72d84d805f8fec1bc1307479ba550e620fca0198746704c23b44833e3e0bd" => :mavericks
+    sha256 "82d23051ab34705cf98a00e8416ec4ea394f5f1753b82519e8f0cfc36f87f46d" => :mountain_lion
   end
 
   fails_with :llvm do

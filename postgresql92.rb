@@ -1,14 +1,13 @@
 class Postgresql92 < Formula
   homepage "http://www.postgresql.org/"
-  url "http://ftp.postgresql.org/pub/source/v9.2.8/postgresql-9.2.8.tar.bz2"
-  sha256 "568ba482340219097475cce9ab744766889692ee7c9df886563e8292d66ed87c"
-  revision 1
+  url "http://ftp.postgresql.org/pub/source/v9.2.12/postgresql-9.2.12.tar.bz2"
+  sha256 "5f381b15fb63f7aa6b221ee56677b6029db0ae4f84bc78768ff9e753063b6d03"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha1 "9a0862d1f9c21a39db7b906ab79db44d8ff24715" => :yosemite
-    sha1 "df49a0d73a830c9a88624bdd344be297ee959e42" => :mavericks
-    sha1 "a97e5b70bbf0ce92cb1839f109865dfbed1fc65f" => :mountain_lion
+    sha256 "ad079845fe44982d242e2da927ff82dc12da0b4ee1c7a634357dee7861dc9586" => :yosemite
+    sha256 "97803ef59590a22155ba4bbc023fec615eb22ad7ea51d0709041c3095de817e0" => :mavericks
+    sha256 "a4f8130dd553c41fd629c56182d20b03332b03e6292b571938d8fff2a139a796" => :mountain_lion
   end
 
   depends_on "openssl"
@@ -34,7 +33,6 @@ class Postgresql92 < Formula
     cause "Miscompilation resulting in segfault on queries"
   end
 
-  # Fix PL/Python build: https://github.com/mxcl/homebrew/issues/11162
   # Fix uuid-ossp build issues: http://archives.postgresql.org/pgsql-general/2012-07/msg00654.php
   patch :DATA
 
@@ -172,23 +170,12 @@ class Postgresql92 < Formula
   end
 
   test do
-    system "#{bin}/initdb", testpath
+    system "#{bin}/initdb", testpath/"test"
   end
 end
 
 
 __END__
---- a/src/pl/plpython/Makefile	2011-09-23 08:03:52.000000000 +1000
-+++ b/src/pl/plpython/Makefile	2011-10-26 21:43:40.000000000 +1100
-@@ -24,8 +24,6 @@
- # Darwin (OS X) has its own ideas about how to do this.
- ifeq ($(PORTNAME), darwin)
- shared_libpython = yes
--override python_libspec = -framework Python
--override python_additional_libs =
- endif
-
- # If we don't have a shared library and the platform doesn't allow it
 --- a/contrib/uuid-ossp/uuid-ossp.c	2012-07-30 18:34:53.000000000 -0700
 +++ b/contrib/uuid-ossp/uuid-ossp.c	2012-07-30 18:35:03.000000000 -0700
 @@ -9,6 +9,8 @@

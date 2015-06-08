@@ -1,14 +1,13 @@
 class Postgresql93 < Formula
   homepage "http://www.postgresql.org/"
-  url "http://ftp.postgresql.org/pub/source/v9.3.5/postgresql-9.3.5.tar.bz2"
-  sha256 "14176ffb1f90a189e7626214365be08ea2bfc26f26994bafb4235be314b9b4b0"
+  url "http://ftp.postgresql.org/pub/source/v9.3.8/postgresql-9.3.8.tar.bz2"
+  sha256 "bc5c3ce755dfc5f6fbc0186a564f97abac3c2914f9a5d5a47f22f4fd354aadfa"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 1
-    sha1 "0598d137c62368c3e0ac0be97787c27a2eeb1949" => :yosemite
-    sha1 "062503ba8546a0d8a4e5d25fdd75ab3a532cfdd5" => :mavericks
-    sha1 "a0fa7de58e3db44271393d56607b4dfb539dcf3d" => :mountain_lion
+    sha256 "6cec00a518d229e388f6021f137635b2ce97aa3ddeb0099043ac5ed9752b6767" => :yosemite
+    sha256 "4a1ea93af8e8879efcc7f82119df647706be2e7e7c1883d24ba303644428d6e8" => :mavericks
+    sha256 "34ed5815e8a27565ebb7272f66d868f09e8a0f6fa86fb4607a8a1a059194406e" => :mountain_lion
   end
 
   depends_on "openssl"
@@ -142,7 +141,7 @@ class Postgresql93 < Formula
   end
 
   test do
-    system "#{bin}/initdb", testpath
+    system "#{bin}/initdb", testpath/"test"
   end
 end
 

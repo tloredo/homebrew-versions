@@ -1,19 +1,24 @@
 class Redis26 < Formula
+  desc "Persistent key-value database, built-in net interface"
   homepage "http://redis.io/"
-  url "https://redis.googlecode.com/files/redis-2.6.14.tar.gz"
-  sha1 "f56a5d4891e94ebd89f7e63c3e9151d1106dedd5"
+  url "http://download.redis.io/releases/redis-2.6.17.tar.gz"
+  sha256 "5a65b54bb6deef2a8a4fabd7bd6962654a5d35787e68f732f471bbf117f4768e"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha1 "7cb8c533eb6613e8e52484acc47808c2442a38f9" => :yosemite
-    sha1 "bac0ebd6021a55d0e0076d0e3ceb38c101ec1238" => :mavericks
-    sha1 "ddf4f2f99e96d58ffa7f816af6e93076ea7adf10" => :mountain_lion
+    cellar :any
+    sha256 "1c0c9565f242a1e34d171950a341e2f38372e49cc5420162c73cf2c39ef2c682" => :yosemite
+    sha256 "f4abb52ec0ef232b85aae9c0e3bbc6cfdfca3e43daeef38e46f3eaeb35644b45" => :mavericks
+    sha256 "4d936a5010e9b50f1c9c347192f11e0b8e365a1948455f6b27415d1a28e35b50" => :mountain_lion
   end
 
   fails_with :llvm do
     build 2334
     cause "Fails with 'reference out of range from _linenoise'"
   end
+
+  conflicts_with "redis",
+                 :because => "Differing version of Homebrew/homebrew Redis"
 
   def install
     # Architecture isn't detected correctly on 32bit Snow Leopard without help
