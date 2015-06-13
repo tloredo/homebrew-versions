@@ -1,18 +1,16 @@
 class Gnupg21 < Formula
   desc "GNU Privacy Guard: a free PGP replacement"
   homepage "https://www.gnupg.org/"
-  url "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.4.tar.bz2"
-  mirror "https://www.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.4.tar.bz2"
-  sha256 "64127eedd868510f2bccccb22c507a4878ffa07495db16a0f976c67f56426cb0"
+  url "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.5.tar.bz2"
+  mirror "https://www.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/gnupg/gnupg-2.1.5.tar.bz2"
+  sha256 "b5105a7160c39ba6e3aa53789b09f1bfac6e3422d15cc9f3a2f71f82320aa84c"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha256 "2ccbf3c10596c8c81a624a1353e4f67b447c537ae09a25ef5e936d309f299442" => :yosemite
-    sha256 "ee6df932554bb036611098a07b3a34bf764fdfc03c45285ba312634a991e7c21" => :mavericks
-    sha256 "7e5d83d492c1d92f8502bc3c6e720bb641e71fb5ca1f5f32b912879f43cb4e91" => :mountain_lion
+    sha256 "6a1bdc5aa91bddc5e52116675e5e3371fc16a8555b12dbe1be1ba1a9f7661b5b" => :yosemite
+    sha256 "4fbf10c1a1d76101504d5e03bd4aeac3686889566c4fdadaa0dedee4350e2532" => :mavericks
+    sha256 "a12c7b3f6f552b179e573c15440dab2529bda23983e627223f1335e67a8ed2eb" => :mountain_lion
   end
-
-  option "with-gpgsplit", "Additionally install the gpgsplit utility"
 
   head do
     url "git://git.gnupg.org/gnupg.git"
@@ -21,6 +19,8 @@ class Gnupg21 < Formula
     depends_on "automake" => :build
     depends_on "libtool" => :build
   end
+
+  option "with-gpgsplit", "Additionally install the gpgsplit utility"
 
   depends_on "pkg-config" => :build
   depends_on "npth"

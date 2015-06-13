@@ -1,14 +1,15 @@
 class Openssl098 < Formula
+  desc "OpenSSL SSL/TLS cryptography library"
   homepage "https://www.openssl.org"
-  url "https://www.openssl.org/source/openssl-0.9.8zf.tar.gz"
-  mirror "https://raw.githubusercontent.com/DomT4/LibreMirror/master/OpenSSL/openssl-0.9.8zf.tar.gz"
-  sha256 "d5245a29128984192acc5b1fc01e37429b7a01c53cadcb2645e546718b300edb"
+  url "https://www.openssl.org/source/openssl-0.9.8zg.tar.gz"
+  mirror "https://raw.githubusercontent.com/DomT4/LibreMirror/master/OpenSSL/openssl-0.9.8zg.tar.gz"
+  sha256 "06500060639930e471050474f537fcd28ec934af92ee282d78b52460fbe8f580"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha256 "4ab0ca109e4064418e0f710ba0e4aa287ab27794fac44957620d491bc61046e1" => :yosemite
-    sha256 "481cf9dfb006915bace31fdc82535e1a31da1f174743ce0050e14d3e604d3d73" => :mavericks
-    sha256 "bc8c827e07112a0146350a47b4d8928a51200aed39bd9880bba2ddb4b53c0b63" => :mountain_lion
+    sha256 "7543cbff1b366dcbde0f554033b7531d162acd9682a0773e7b8bfbf495ef9751" => :yosemite
+    sha256 "f6b0ccc6cbcbfb60ea1e960a45351497d664c4172361b1c8ccb9db657549e60a" => :mavericks
+    sha256 "c832d4b68e71c13d82d064bb6a7813871d59f862dd2b7c48f5c0fa2a1ea8f2dc" => :mountain_lion
   end
 
   keg_only :provided_by_osx

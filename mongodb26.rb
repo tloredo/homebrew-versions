@@ -1,15 +1,14 @@
 class Mongodb26 < Formula
   homepage "https://www.mongodb.org/"
-  url "https://fastdl.mongodb.org/src/mongodb-src-r2.6.8.tar.gz"
-  sha256 "1997f60d9de17320f22c604d8aa1cbe5f38d877142cd0e9130fe3dae7b311a06"
+  url "https://fastdl.mongodb.org/src/mongodb-src-r2.6.10.tar.gz"
+  sha256 "74228a22aaf99570e706ecde20658165e3983ee8a9f327e80974f82a4e819476"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
     cellar :any
-    revision 1
-    sha256 "eb8e16df2c97b154eec8b748a1939e1f8848fe63ff884dc38342ac650d9f8aa9" => :yosemite
-    sha256 "c1e07199ff333e8bb5a74ce9f546418540cccba044dae88ec792a1d19b8e0ae3" => :mavericks
-    sha256 "db314adf23ea2406a98a88c3872ab76f8879ef23cff1b56997446d02664fa663" => :mountain_lion
+    sha256 "bd5852b11ce963080a1d9ab1515cd245f664a7e7af6b8c98c6faecca0c26cf68" => :yosemite
+    sha256 "cda0943fc9b5b1c82dc05dea48b412d64ca4a67e25a403870b3c0d551e5349fc" => :mavericks
+    sha256 "d5161a92f18a9dd9b4025440dd08f7662b7cbe9fa10518a9b5b053adc187d363" => :mountain_lion
   end
 
   option "with-boost", "Compile using installed boost, not the version shipped with mongodb"
