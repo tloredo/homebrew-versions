@@ -33,6 +33,15 @@ class Gcc47 < Formula
     sha1 "b906176ebbbe42371495c5cdea6fa7f85505827e" => :mountain_lion
   end
 
+  if MacOS.version >= :el_capitan
+    # Fixes build with Xcode 7.
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66523
+    patch do
+      url "https://gcc.gnu.org/bugzilla/attachment.cgi?id=35773"
+      sha256 "db4966ade190fff4ed39976be8d13e84839098711713eff1d08920d37a58f5ec"
+    end
+  end
+
   option "with-fortran", "Build the gfortran compiler"
   option "with-java", "Build the gcj compiler"
   option "with-all-languages", "Enable all compilers and languages, except Ada"

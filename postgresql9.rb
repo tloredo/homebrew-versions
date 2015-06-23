@@ -1,19 +1,15 @@
 class Postgresql9 < Formula
+  desc "Object-relational database system"
   homepage "http://www.postgresql.org/"
-  url "http://ftp.postgresql.org/pub/source/v9.0.21/postgresql-9.0.21.tar.bz2"
-  sha256 "6ed313dd4b12650fc5fc667cfef9f3f53c0f7664a6c2ecfba8d45e2b01709cb8"
+  url "http://ftp.postgresql.org/pub/source/v9.0.22/postgresql-9.0.22.tar.bz2"
+  sha256 "94d4b20d854cd7fa4c9c322c0b602751edbc5ca0d4f29fe92f996e28bb32f8a5"
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    sha256 "e7d2e51d5098451fcd5789a0a7f6eb4e05367fd58dc13a6abdd66f7be1abbea0" => :yosemite
-    sha256 "7653cfe372b83fbed596004bce8e416a8654499f4ffcfa3c6013ee462b1493d0" => :mavericks
-    sha256 "cc14f5ab2e087596e2539867c38240a6e5c77c931e7fed42198826b072dd8047" => :mountain_lion
+    sha256 "a9136942f2c992ca61b4d616edc663c134c08e1822299963a36e5df8a4cd475e" => :yosemite
+    sha256 "6b36731bc9bdcf4942bcf9cd19ab7b93f3384207466e85b7f8e1145d6a1543e3" => :mavericks
+    sha256 "f2bd3036934640a771d8d33e715acaa851bd3f7e0b33dc1a11f7069aac2b508d" => :mountain_lion
   end
-
-  depends_on "openssl"
-  depends_on "readline"
-  depends_on "libxml2" if MacOS.version == :leopard
-  depends_on "ossp-uuid" => :recommended
 
   option "without-python", "Build without Python support"
   option "without-perl", "Build without Perl support"
@@ -24,6 +20,11 @@ class Postgresql9 < Formula
   deprecated_option "no-perl" => "without-perl"
   deprecated_option "no-tcl" => "without-tcl"
   deprecated_option "enable-dtrace" => "with-dtrace"
+
+  depends_on "openssl"
+  depends_on "readline"
+  depends_on "libxml2" if MacOS.version == :leopard
+  depends_on "ossp-uuid" => :recommended
 
   # Fix uuid-ossp build issues: http://archives.postgresql.org/pgsql-general/2012-07/msg00654.php
   patch :DATA
@@ -66,7 +67,7 @@ class Postgresql9 < Formula
       ENV.append "LIBS", `uuid-config --libs`.strip
     end
 
-    if MacOS.prefer_64_bit? and build.with? "python"
+    if MacOS.prefer_64_bit? && build.with?("python")
       args << "ARCHFLAGS='-arch x86_64'"
       check_python_arch
     end

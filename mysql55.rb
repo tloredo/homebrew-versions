@@ -6,10 +6,10 @@ class Mysql55 < Formula
 
   bottle do
     root_url "https://homebrew.bintray.com/bottles-versions"
-    revision 1
-    sha256 "aa8fe36e0d33927714e1ea3a054a50f0eaacb5137861df8992f793e9e286e0c6" => :yosemite
-    sha256 "3178054f53c5d5860522cd85fed13d300e193a37663b4c0a4bb1183b97a3f898" => :mavericks
-    sha256 "d06055b75d416df26becc1694b3fffd5bf4b018d9c1b20f57c540bfc67a1244a" => :mountain_lion
+    revision 2
+    sha256 "eeacb7aba73191733f822f8e20bf19b220becca116120d3d1aeb9ec82d0d17bb" => :yosemite
+    sha256 "0059b640fb7c4c02b485423e7135f0d4d30cda7c21533d16d460a9cf5deb2e87" => :mavericks
+    sha256 "e2446972a03786904fbdc1e0388ebedb62f58dcc29b117d1eb8feed8b145d147" => :mountain_lion
   end
 
   depends_on "cmake" => :build
@@ -37,7 +37,7 @@ class Mysql55 < Formula
   end
 
   def datadir
-    var/"mysql"
+    var/name
   end
 
   def install
